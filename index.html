@@ -1860,10 +1860,10 @@
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│  &quot;What can this agent do?&quot; → Policy-based access control decisions         │
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>├────────────────────────────────────────────────────────────────────────────┤
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│  Layer 4: HUMAN DELEGATION                                                 │
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│  ┌───────────────────────────┐  ┌───────────────────────────┐              │
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│  │      OAuth 2.x            │  │        ID-JAG             │              │
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>│  │   (Authorization)         │  │  (Identity Assertion)     │              │
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│  └───────────────────────────┘  └───────────────────────────┘              │
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│  ┌───────────────────────────┐  ┌──────────────────────────┐               │
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│  │      OAuth 2.x            │  │        ID-JAG            │               │
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>│  │   (Authorization)         │  │  (Identity Assertion)    │               │
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│  └───────────────────────────┘  └──────────────────────────┘               │
 </span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>│  &quot;Who delegated authority?&quot; → Chain of authority from human to agent       │
 </span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>├────────────────────────────────────────────────────────────────────────────┤
 </span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>│  Layer 3: AGENT AUTHENTICATION                                             │
@@ -1874,10 +1874,10 @@
 </span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>│  &quot;Which autonomous agent is this?&quot; → Cryptographic agent identity          │
 </span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>├────────────────────────────────────────────────────────────────────────────┤
 </span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>│  Layer 2: WORKLOAD IDENTITY                                                │
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>│  ┌───────────────────────────┐  ┌───────────────────────────┐              │
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>│  │         WIMSE             │  │        SPIFFE             │              │
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>│  │    (Workload Identity)    │  │    (X.509 SVIDs)          │              │
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>│  └───────────────────────────┘  └───────────────────────────┘              │
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>│  ┌───────────────────────────┐  ┌──────────────────────────┐               │
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>│  │         WIMSE             │  │        SPIFFE            │               │
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>│  │    (Workload Identity)    │  │    (X.509 SVIDs)         │               │
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>│  └───────────────────────────┘  └──────────────────────────┘               │
 </span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>│  &quot;Which workload hosts this agent?&quot; → Infrastructure-level identity        │
 </span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>├────────────────────────────────────────────────────────────────────────────┤
 </span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>│  Layer 1: LIFECYCLE MANAGEMENT                                             │
@@ -1889,10 +1889,10 @@
 </span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>└────────────────────────────────────────────────────────────────────────────┘
 </span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>
 </span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>Cross-Cutting Concerns:
-</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>┌─────────────────────────┐  ┌─────────────────────────┐  ┌─────────────────┐
-</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>│  A2A (Agent-to-Agent)   │  │  MCP (Model Context)    │  │  OpenTelemetry  │
-</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>│  Discovery &amp; Delegation │  │  Tool Integration       │  │  Observability  │
-</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>└─────────────────────────┘  └─────────────────────────┘  └─────────────────┘
+</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>┌──────────────────────────┐  ┌─────────────────────────┐  ┌─────────────────┐
+</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>│  A2A (Agent-to-Agent)    │  │  MCP (Model Context)    │  │  OpenTelemetry  │
+</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>│  Discovery &amp; Delegation  │  │  Tool Integration       │  │  Observability  │
+</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>└──────────────────────────┘  └─────────────────────────┘  └─────────────────┘
 </span></code></pre></div>
 <table>
 <thead>
@@ -2045,7 +2045,7 @@
 </ul>
 <h3 id="interoperability">Interoperability<a class="headerlink" href="#interoperability" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong><a href="https://github.com/a2a-protocol/a2a">A2A</a></strong> - Agent-to-Agent discovery and delegation</li>
+<li><strong><a href="https://google.github.io/A2A/">A2A</a></strong> - Agent-to-Agent discovery and delegation</li>
 <li><strong><a href="https://spec.modelcontextprotocol.io/">MCP</a></strong> - Model Context Protocol for tool integration</li>
 </ul>
 <h2 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
