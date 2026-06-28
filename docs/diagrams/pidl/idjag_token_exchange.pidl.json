@@ -1,0 +1,204 @@
+{
+  "protocol": {
+    "id": "idjag-token-exchange",
+    "name": "ID-JAG Token Exchange Flow",
+    "version": "1.0",
+    "description": "Identity Assertion Authorization Grant (ID-JAG) enables agents to exchange signed JWT assertions for access tokens, providing automated, policy-based authorization without human interaction.",
+    "category": "auth",
+    "references": [
+      {
+        "name": "ID-JAG Specification",
+        "url": "https://datatracker.ietf.org/doc/draft-ietf-oauth-identity-assertion-authz-grant/"
+      },
+      {
+        "name": "OAuth 2.0 Token Exchange",
+        "url": "https://www.rfc-editor.org/rfc/rfc8693"
+      }
+    ]
+  },
+  "entities": [
+    {
+      "id": "agent",
+      "name": "OAIAF Agent",
+      "type": "agent",
+      "description": "AI agent using OAIAF framework with IDJAGProvider",
+      "trust_level": "semi_trusted"
+    },
+    {
+      "id": "auth_server",
+      "name": "Authorization Server",
+      "type": "authorization_server",
+      "description": "OAuth 2.0 authorization server supporting token exchange",
+      "trust_level": "authoritative"
+    },
+    {
+      "id": "resource_server",
+      "name": "Resource Server",
+      "type": "resource_server",
+      "description": "Protected API that validates access tokens",
+      "trust_level": "trusted"
+    }
+  ],
+  "phases": [
+    {
+      "id": "assertion_creation",
+      "name": "Assertion Creation",
+      "description": "Agent creates signed JWT assertion with identity claims"
+    },
+    {
+      "id": "token_exchange",
+      "name": "Token Exchange",
+      "description": "Agent exchanges assertion for access token via RFC 8693"
+    },
+    {
+      "id": "resource_access",
+      "name": "Resource Access",
+      "description": "Agent accesses protected resource with bearer token"
+    }
+  ],
+  "flows": [
+    {
+      "from": "agent",
+      "to": "agent",
+      "action": "create_assertion",
+      "label": "Create JWT Assertion",
+      "mode": "interactive",
+      "phase": "assertion_creation",
+      "description": "Agent creates a signed JWT assertion containing identity claims (iss, sub, aud, scope)",
+      "sequence": 1,
+      "annotations": [
+        {
+          "type": "security",
+          "text": "JWT signed with agent's private key (ES256, RS256, or EdDSA)"
+        }
+      ]
+    },
+    {
+      "from": "agent",
+      "to": "auth_server",
+      "action": "token_request",
+      "label": "POST /token\ngrant_type=token-exchange\nsubject_token={jwt}",
+      "mode": "request",
+      "phase": "token_exchange",
+      "description": "Agent sends token exchange request with JWT assertion as subject_token",
+      "sequence": 2,
+      "security": {
+        "requires": ["signature"],
+        "description": "Request contains signed JWT assertion"
+      }
+    },
+    {
+      "from": "auth_server",
+      "to": "auth_server",
+      "action": "validate_assertion",
+      "label": "Validate JWT Signature\nCheck Agent Registration\nEvaluate Policies",
+      "mode": "interactive",
+      "phase": "token_exchange",
+      "description": "Authorization server validates JWT signature, checks agent is registered, evaluates delegation policies",
+      "sequence": 3,
+      "annotations": [
+        {
+          "type": "security",
+          "text": "Verify agent key via JWKS or pre-registered key"
+        }
+      ]
+    },
+    {
+      "from": "auth_server",
+      "to": "agent",
+      "action": "token_response",
+      "label": "200 OK\n{access_token, token_type, expires_in}",
+      "mode": "response",
+      "phase": "token_exchange",
+      "description": "Authorization server returns access token if validation succeeds",
+      "sequence": 4,
+      "condition": "assertion_valid",
+      "security": {
+        "token": "access_token",
+        "description": "Bearer token for resource access"
+      }
+    },
+    {
+      "from": "auth_server",
+      "to": "agent",
+      "action": "error_response",
+      "label": "400 Bad Request\n{error: invalid_grant}",
+      "mode": "response",
+      "phase": "token_exchange",
+      "description": "Authorization server returns error if assertion is invalid",
+      "sequence": 4,
+      "condition": "assertion_invalid",
+      "annotations": [
+        {
+          "type": "error",
+          "text": "Common errors: invalid_grant, unauthorized_client"
+        }
+      ]
+    },
+    {
+      "from": "agent",
+      "to": "agent",
+      "action": "cache_token",
+      "label": "Cache Token",
+      "mode": "interactive",
+      "phase": "token_exchange",
+      "description": "Agent caches token keyed by scope for reuse until expiration",
+      "sequence": 5
+    },
+    {
+      "from": "agent",
+      "to": "resource_server",
+      "action": "api_request",
+      "label": "GET /api/resource\nAuthorization: Bearer {token}",
+      "mode": "request",
+      "phase": "resource_access",
+      "description": "Agent makes authorized request to protected resource",
+      "sequence": 6,
+      "security": {
+        "requires": ["token"],
+        "token": "access_token",
+        "description": "Bearer token in Authorization header"
+      }
+    },
+    {
+      "from": "resource_server",
+      "to": "resource_server",
+      "action": "validate_token",
+      "label": "Validate Token",
+      "mode": "interactive",
+      "phase": "resource_access",
+      "description": "Resource server validates token (signature, expiry, scope)",
+      "sequence": 7
+    },
+    {
+      "from": "resource_server",
+      "to": "agent",
+      "action": "api_response",
+      "label": "200 OK\n{resource data}",
+      "mode": "response",
+      "phase": "resource_access",
+      "description": "Resource server returns requested data",
+      "sequence": 8
+    }
+  ],
+  "metadata": {
+    "tokens": [
+      {
+        "id": "access_token",
+        "name": "Access Token",
+        "type": "jwt",
+        "issuer": "auth_server",
+        "audience": "resource_server",
+        "binding": "bearer"
+      },
+      {
+        "id": "assertion",
+        "name": "ID-JAG Assertion",
+        "type": "jwt",
+        "issuer": "agent",
+        "audience": "auth_server",
+        "binding": "bearer"
+      }
+    ]
+  }
+}

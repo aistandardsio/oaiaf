@@ -1,0 +1,44 @@
+@startuml
+title AAuth Human-in-the-Loop Consent Flow
+
+participant "OAIAF Agent" as agent
+participant "Human User" as user
+participant "Authorization Server" as auth_server
+participant "Resource Server" as resource_server
+
+
+== Authorization Request ==
+agent -> auth_server: POST /authorize
+{agent_token, scope, user_id}
+auth_server -> auth_server: Check Auto-Approval Policy
+auth_server --> agent: 202 Accepted
+{consent_uri, status_uri, mission_id}
+
+== Consent Flow ==
+agent -> user: Display Consent URI
+(browser, notification, etc.)
+user -> auth_server: GET {consent_uri}
+Review Request Details
+auth_server --> user: Consent Page
+(scope, agent info, mission details)
+user -> auth_server: POST /consent
+{approved: true}
+user -> auth_server: POST /consent
+{approved: false}
+
+== Token Issuance ==
+agent -> auth_server: GET {status_uri}
+auth_server --> agent: 200 OK
+{status: pending}
+auth_server --> agent: 200 OK
+{status: approved, access_token}
+auth_server --> agent: 200 OK
+{status: denied, error}
+
+== Resource Access ==
+agent -> resource_server: POST /api/action
+Authorization: Bearer {token}
+resource_server --> agent: 200 OK
+{result}
+
+@enduml

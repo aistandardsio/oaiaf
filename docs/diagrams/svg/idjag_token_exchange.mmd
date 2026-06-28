@@ -1,0 +1,36 @@
+sequenceDiagram
+    title ID-JAG Token Exchange Flow
+    autonumber
+
+    participant agent as OAIAF Agent
+    participant auth_server as Authorization Server
+    participant resource_server as Resource Server
+
+    rect rgb(240, 240, 240)
+    note right of agent: Assertion Creation
+    agent->>agent: Create JWT Assertion
+    end
+
+    rect rgb(240, 240, 240)
+    note right of agent: Token Exchange
+    agent->>auth_server: POST /token
+grant_type=token-exchange
+subject_token={jwt}
+    auth_server->>auth_server: Validate JWT Signature
+Check Agent Registration
+Evaluate Policies
+    auth_server-->>agent: 200 OK
+{access_token, token_type, expires_in}
+    auth_server-->>agent: 400 Bad Request
+{error&&#35;58; invalid_grant}
+    agent->>agent: Cache Token
+    end
+
+    rect rgb(240, 240, 240)
+    note right of agent: Resource Access
+    agent->>resource_server: GET /api/resource
+Authorization&&#35;58; Bearer {token}
+    resource_server->>resource_server: Validate Token
+    resource_server-->>agent: 200 OK
+{resource data}
+    end

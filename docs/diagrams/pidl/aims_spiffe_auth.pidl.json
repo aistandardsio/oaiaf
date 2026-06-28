@@ -1,0 +1,225 @@
+{
+  "protocol": {
+    "id": "aims-spiffe-auth",
+    "name": "AIMS/SPIFFE Workload Identity Authentication",
+    "version": "1.0",
+    "description": "Agent Identity and Messaging System (AIMS) uses SPIFFE workload identity with X.509 SVIDs for mTLS-based authentication, binding agent identity to infrastructure.",
+    "category": "auth",
+    "references": [
+      {
+        "name": "SPIFFE Specification",
+        "url": "https://spiffe.io/"
+      },
+      {
+        "name": "WIMSE Architecture",
+        "url": "https://datatracker.ietf.org/doc/draft-ietf-wimse-architecture/"
+      }
+    ]
+  },
+  "entities": [
+    {
+      "id": "agent",
+      "name": "OAIAF Agent",
+      "type": "agent",
+      "description": "AI agent using OAIAF framework with AIMSProvider",
+      "trust_level": "semi_trusted"
+    },
+    {
+      "id": "spire_agent",
+      "name": "SPIRE Agent",
+      "type": "server",
+      "description": "Local SPIRE agent providing workload identity via Workload API",
+      "trust_level": "trusted"
+    },
+    {
+      "id": "auth_server",
+      "name": "Authorization Server",
+      "type": "authorization_server",
+      "description": "OAuth server accepting SPIFFE SVIDs for token exchange",
+      "trust_level": "authoritative"
+    },
+    {
+      "id": "resource_server",
+      "name": "Resource Server",
+      "type": "resource_server",
+      "description": "Protected API accepting mTLS or bearer token authentication",
+      "trust_level": "trusted"
+    }
+  ],
+  "phases": [
+    {
+      "id": "svid_acquisition",
+      "name": "SVID Acquisition",
+      "description": "Agent obtains X.509 SVID from SPIRE Workload API"
+    },
+    {
+      "id": "token_exchange",
+      "name": "Token Exchange",
+      "description": "Agent exchanges SVID for access token via mTLS"
+    },
+    {
+      "id": "resource_access",
+      "name": "Resource Access",
+      "description": "Agent accesses resource with SPIFFE identity"
+    }
+  ],
+  "flows": [
+    {
+      "from": "agent",
+      "to": "spire_agent",
+      "action": "fetch_svid",
+      "label": "FetchX509SVID()\nvia Workload API socket",
+      "mode": "request",
+      "phase": "svid_acquisition",
+      "description": "Agent requests X.509 SVID from local SPIRE agent via Unix socket",
+      "sequence": 1,
+      "annotations": [
+        {
+          "type": "security",
+          "text": "Connection authenticated by kernel (Unix socket credentials)"
+        }
+      ]
+    },
+    {
+      "from": "spire_agent",
+      "to": "spire_agent",
+      "action": "attest_workload",
+      "label": "Workload Attestation\n(PID, namespace, container)",
+      "mode": "interactive",
+      "phase": "svid_acquisition",
+      "description": "SPIRE agent attests the calling workload using configured attestor",
+      "sequence": 2
+    },
+    {
+      "from": "spire_agent",
+      "to": "agent",
+      "action": "svid_response",
+      "label": "X.509 SVID + Trust Bundle\nSPIFFE ID: spiffe://example.com/agent/x",
+      "mode": "response",
+      "phase": "svid_acquisition",
+      "description": "SPIRE agent returns short-lived X.509 certificate with SPIFFE ID in URI SAN",
+      "sequence": 3,
+      "security": {
+        "requires": ["encryption"],
+        "description": "SVID contains agent's SPIFFE ID"
+      }
+    },
+    {
+      "from": "agent",
+      "to": "auth_server",
+      "action": "token_request",
+      "label": "POST /token (mTLS)\ngrant_type=token-exchange\nsubject_token_type=svid",
+      "mode": "request",
+      "phase": "token_exchange",
+      "description": "Agent requests token using mTLS with SVID as client certificate",
+      "sequence": 4,
+      "security": {
+        "requires": ["mtls"],
+        "description": "SVID presented as mTLS client certificate"
+      }
+    },
+    {
+      "from": "auth_server",
+      "to": "auth_server",
+      "action": "validate_svid",
+      "label": "Validate SVID\n- Verify certificate chain\n- Check SPIFFE ID format\n- Match registration",
+      "mode": "interactive",
+      "phase": "token_exchange",
+      "description": "Auth server validates SVID against trust bundle and checks agent registration",
+      "sequence": 5,
+      "annotations": [
+        {
+          "type": "security",
+          "text": "SPIFFE ID extracted from certificate URI SAN"
+        }
+      ]
+    },
+    {
+      "from": "auth_server",
+      "to": "agent",
+      "action": "token_response",
+      "label": "200 OK\n{access_token, token_type, scope}",
+      "mode": "response",
+      "phase": "token_exchange",
+      "description": "Auth server returns access token bound to SPIFFE ID",
+      "sequence": 6,
+      "condition": "svid_valid",
+      "security": {
+        "token": "access_token",
+        "description": "Token linked to workload identity"
+      }
+    },
+    {
+      "from": "agent",
+      "to": "resource_server",
+      "action": "api_request_mtls",
+      "label": "GET /api/resource (mTLS)\nAuthorization: Bearer {token}",
+      "mode": "request",
+      "phase": "resource_access",
+      "description": "Agent accesses resource using mTLS + bearer token (defense in depth)",
+      "sequence": 7,
+      "security": {
+        "requires": ["mtls", "token"],
+        "token": "access_token",
+        "description": "Both mTLS and bearer token for defense in depth"
+      }
+    },
+    {
+      "from": "resource_server",
+      "to": "resource_server",
+      "action": "validate_identity",
+      "label": "Validate mTLS + Token\nMatch SPIFFE IDs",
+      "mode": "interactive",
+      "phase": "resource_access",
+      "description": "Resource server validates both certificate SPIFFE ID and token claims match",
+      "sequence": 8,
+      "annotations": [
+        {
+          "type": "security",
+          "text": "SPIFFE ID in certificate must match token sub claim"
+        }
+      ]
+    },
+    {
+      "from": "resource_server",
+      "to": "agent",
+      "action": "api_response",
+      "label": "200 OK\n{resource data}",
+      "mode": "response",
+      "phase": "resource_access",
+      "description": "Resource server returns requested data",
+      "sequence": 9
+    }
+  ],
+  "metadata": {
+    "tokens": [
+      {
+        "id": "svid",
+        "name": "X.509 SVID",
+        "type": "x509",
+        "issuer": "spire_agent",
+        "binding": "mtls"
+      },
+      {
+        "id": "access_token",
+        "name": "Access Token",
+        "type": "jwt",
+        "issuer": "auth_server",
+        "audience": "resource_server",
+        "binding": "bearer"
+      }
+    ],
+    "networks": {
+      "workload": {
+        "name": "Workload Environment",
+        "style": "internal",
+        "entities": ["agent", "spire_agent"]
+      },
+      "infrastructure": {
+        "name": "Infrastructure",
+        "style": "dmz",
+        "entities": ["auth_server", "resource_server"]
+      }
+    }
+  }
+}

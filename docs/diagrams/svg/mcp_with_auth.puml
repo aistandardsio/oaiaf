@@ -1,0 +1,41 @@
+@startuml
+title MCP Tool Invocation with OAIAF Authorization
+
+participant "OAIAF Agent" as agent
+participant "MCP Server" as mcp_server
+participant "Authorization Server" as auth_server
+participant "External API" as external_api
+
+
+== MCP Initialization ==
+agent -> mcp_server: initialize
+{protocolVersion, capabilities}
+mcp_server --> agent: initialize response
+{serverInfo, capabilities}
+agent -> mcp_server: tools/list
+mcp_server --> agent: tools/list response
+[{name: search_code, inputSchema, auth_required: true}]
+
+== Tool Authentication ==
+agent -> auth_server: POST /token
+grant_type=client_credentials
+scope=mcp:search_code
+auth_server --> agent: 200 OK
+{access_token, scope: mcp:search_code}
+
+== Tool Invocation ==
+agent -> mcp_server: tools/call
+{name: search_code, arguments: {query: "sql injection"}}
+Authorization: Bearer {token} (tool)
+mcp_server -> mcp_server: Validate Token
+Check scope: mcp:search_code
+
+== Tool Execution ==
+mcp_server -> external_api: GET /api/search
+?q=sql+injection
+external_api --> mcp_server: 200 OK
+{results: [...]}
+mcp_server --> agent: tools/call response
+{content: [{type: text, text: "Found 3 matches..."}]} (result)
+
+@enduml

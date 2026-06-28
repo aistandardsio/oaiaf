@@ -1,0 +1,53 @@
+@startuml
+title OAIAF Five-Layer Agent Identity Stack
+
+participant "Enterprise Admin" as admin
+participant "SCIM Server" as scim_server
+participant "Delegating User" as user
+participant "OAIAF Agent" as agent
+participant "SPIRE" as spire
+participant "Authorization Server" as auth_server
+participant "Policy Decision Point" as pdp
+participant "Resource Server" as resource_server
+
+
+== Layer 1: Lifecycle Management ==
+admin -> scim_server: POST /Agents
+{displayName, capabilities, owner}
+scim_server --> admin: 201 Created
+{id, spiffeID, status: active}
+
+== Layer 2: Workload Identity ==
+agent -> spire: FetchX509SVID()
+spire --> agent: X.509 SVID
+spiffe://example.com/agent/{id}
+
+== Layer 4: Human Delegation ==
+user -> auth_server: OIDC Login
+auth_server --> user: ID Token + Session
+
+== Layer 3: Agent Authentication ==
+agent -> auth_server: POST /token (mTLS)
+ID-JAG assertion
+delegator={user_id}
+auth_server -> auth_server: Validate:
+- SVID (workload)
+- Assertion (agent)
+- Delegation (user)
+auth_server --> agent: Access Token
+{sub: agent, act: {sub: user}, scope}
+
+== Layer 5: Authorization ==
+agent -> resource_server: POST /api/sensitive-action
+Authorization: Bearer {token}
+resource_server -> pdp: POST /access/v1/evaluation
+{subject: {agent, user}, action, resource}
+pdp -> pdp: Evaluate Cedar/OpenFGA Policy
+- Agent capabilities
+- User permissions
+- Resource constraints
+pdp --> resource_server: {decision: PERMIT}
+resource_server --> agent: 200 OK
+{result}
+
+@enduml
