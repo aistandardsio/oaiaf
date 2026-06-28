@@ -32,6 +32,61 @@
 
 OAIAF provides a reference architecture for building AI agents with built-in support for agent authorization protocols including ID-JAG, AAuth, AIMS, A2A, AuthZEN, and MCP.
 
+## The Five-Layer Agent Identity Stack
+
+```
+┌────────────────────────────────────────────────────────────────────────────┐
+│  Layer 5: AUTHORIZATION                                                    │
+│  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐                   │
+│  │   AuthZEN     │  │    Cedar      │  │   OpenFGA     │                   │
+│  │   (API)       │  │   (ABAC)      │  │   (ReBAC)     │                   │
+│  └───────────────┘  └───────────────┘  └───────────────┘                   │
+│  "What can this agent do?" → Policy-based access control decisions         │
+├────────────────────────────────────────────────────────────────────────────┤
+│  Layer 4: HUMAN DELEGATION                                                 │
+│  ┌───────────────────────────┐  ┌───────────────────────────┐              │
+│  │      OAuth 2.x            │  │        ID-JAG             │              │
+│  │   (Authorization)         │  │  (Identity Assertion)     │              │
+│  └───────────────────────────┘  └───────────────────────────┘              │
+│  "Who delegated authority?" → Chain of authority from human to agent       │
+├────────────────────────────────────────────────────────────────────────────┤
+│  Layer 3: AGENT AUTHENTICATION                                             │
+│  ┌─────────────────────────────────────────────────────────┐               │
+│  │                        AAuth                            │               │
+│  │            (HTTP Signatures + Mission Scope)            │               │
+│  └─────────────────────────────────────────────────────────┘               │
+│  "Which autonomous agent is this?" → Cryptographic agent identity          │
+├────────────────────────────────────────────────────────────────────────────┤
+│  Layer 2: WORKLOAD IDENTITY                                                │
+│  ┌───────────────────────────┐  ┌───────────────────────────┐              │
+│  │         WIMSE             │  │        SPIFFE             │              │
+│  │    (Workload Identity)    │  │    (X.509 SVIDs)          │              │
+│  └───────────────────────────┘  └───────────────────────────┘              │
+│  "Which workload hosts this agent?" → Infrastructure-level identity        │
+├────────────────────────────────────────────────────────────────────────────┤
+│  Layer 1: LIFECYCLE MANAGEMENT                                             │
+│  ┌─────────────────────────────────────────────────────────┐               │
+│  │                  SCIM Agent Resource                    │               │
+│  │          (Provisioning, Capabilities, Metadata)         │               │
+│  └─────────────────────────────────────────────────────────┘               │
+│  "What agents exist?" → Agent registration and capability declaration      │
+└────────────────────────────────────────────────────────────────────────────┘
+
+Cross-Cutting Concerns:
+┌─────────────────────────┐  ┌─────────────────────────┐  ┌─────────────────┐
+│  A2A (Agent-to-Agent)   │  │  MCP (Model Context)    │  │  OpenTelemetry  │
+│  Discovery & Delegation │  │  Tool Integration       │  │  Observability  │
+└─────────────────────────┘  └─────────────────────────┘  └─────────────────┘
+```
+
+| Layer | Standards | Question Answered |
+|-------|-----------|-------------------|
+| 5. Authorization | AuthZEN, Cedar, OpenFGA | What can this agent do? |
+| 4. Human Delegation | OAuth 2.x, ID-JAG | Who delegated authority to this agent? |
+| 3. Agent Authentication | AAuth | Which autonomous agent is this? |
+| 2. Workload Identity | WIMSE, SPIFFE | Which workload/service hosts this agent? |
+| 1. Lifecycle | SCIM Agent Resource | What agents exist and what are their capabilities? |
+
 ## About the Name
 
 Each word in **Open Agent Internet Architecture Framework** was chosen deliberately:
