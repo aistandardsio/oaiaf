@@ -21,7 +21,7 @@ type AIMSProvider struct {
 	httpClient *http.Client
 
 	// SPIFFE configuration
-	spiffeID       string       // e.g., spiffe://example.com/agent/my-agent
+	spiffeID       string // e.g., spiffe://example.com/agent/my-agent
 	trustBundle    *x509.CertPool
 	svid           *tls.Certificate
 	workloadSocket string // Path to SPIFFE Workload API socket
