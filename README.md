@@ -75,10 +75,10 @@ Generated protocol artifacts
 
 ## Features
 
-- **Protocol Support** - Built-in support for ID-JAG, AAuth, and AIMS protocols
-- **Token Management** - Automatic token caching and renewal
-- **Human-in-the-Loop** - Support for consent flows when required
-- **HTTP Integration** - Easy-to-use HTTP client with automatic authorization
+- 🔌 **Protocol Support** - Built-in support for ID-JAG, AAuth, and AIMS protocols
+- 🔑 **Token Management** - Automatic token caching and renewal
+- 👤 **Human-in-the-Loop** - Support for consent flows when required
+- 🌐 **HTTP Integration** - Easy-to-use HTTP client with automatic authorization
 
 ## Installation
 
