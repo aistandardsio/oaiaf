@@ -22,21 +22,32 @@
       "name": "OAIAF Agent",
       "type": "agent",
       "description": "AI agent using OAIAF framework with IDJAGProvider",
-      "trust_level": "semi_trusted"
+      "trust_level": "semi_trusted",
+      "protocol_roles": [
+        { "protocol": "idjag", "role": "client", "variant": "assertion_issuer", "description": "Creates JWT assertions" },
+        { "protocol": "oauth", "role": "client", "description": "Requests tokens" }
+      ]
     },
     {
       "id": "auth_server",
       "name": "Authorization Server",
       "type": "authorization_server",
       "description": "OAuth 2.0 authorization server supporting token exchange",
-      "trust_level": "authoritative"
+      "trust_level": "authoritative",
+      "protocol_roles": [
+        { "protocol": "oauth", "role": "authorization_server", "description": "Issues access tokens" },
+        { "protocol": "idjag", "role": "token_endpoint", "description": "Exchanges assertions for tokens" }
+      ]
     },
     {
       "id": "resource_server",
       "name": "Resource Server",
       "type": "resource_server",
       "description": "Protected API that validates access tokens",
-      "trust_level": "trusted"
+      "trust_level": "trusted",
+      "protocol_roles": [
+        { "protocol": "oauth", "role": "resource_server", "description": "Validates bearer tokens" }
+      ]
     }
   ],
   "phases": [
@@ -198,6 +209,56 @@
         "issuer": "agent",
         "audience": "auth_server",
         "binding": "bearer"
+      }
+    ],
+    "components": [
+      {
+        "id": "idp",
+        "name": "Identity Provider",
+        "type": "idp",
+        "description": "OAuth/OIDC authorization server with ID-JAG support",
+        "entities": ["auth_server"],
+        "implements": [
+          { "protocol": "oauth", "role": "authorization_server" },
+          { "protocol": "idjag", "role": "token_endpoint" }
+        ],
+        "examples": ["Okta", "Entra ID", "Auth0", "Keycloak"]
+      },
+      {
+        "id": "resource",
+        "name": "Protected Resource",
+        "type": "resource_api",
+        "description": "API protected by OAuth bearer tokens",
+        "entities": ["resource_server"],
+        "implements": [
+          { "protocol": "oauth", "role": "resource_server" }
+        ]
+      }
+    ],
+    "trust_relations": [
+      {
+        "id": "agent_idp",
+        "from": "agent",
+        "to": "idp",
+        "type": "authenticates",
+        "credentials": ["jwt_assertion"],
+        "description": "Agent authenticates with signed JWT assertion"
+      },
+      {
+        "id": "idp_agent",
+        "from": "idp",
+        "to": "agent",
+        "type": "issues",
+        "credentials": ["access_token"],
+        "description": "IdP issues access token to agent"
+      },
+      {
+        "id": "idp_resource",
+        "from": "idp",
+        "to": "resource",
+        "type": "trusts",
+        "credentials": ["access_token"],
+        "description": "Resource trusts tokens issued by IdP"
       }
     ]
   }

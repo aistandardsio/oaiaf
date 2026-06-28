@@ -2,7 +2,7 @@
   "protocol": {
     "id": "agent-identity-stack",
     "name": "OAIAF Five-Layer Agent Identity Stack",
-    "version": "1.0",
+    "version": "1.1",
     "description": "Complete flow through the five-layer agent identity stack: Lifecycle (SCIM), Workload Identity (SPIFFE), Agent Authentication (AAuth), Human Delegation (ID-JAG), and Authorization (AuthZEN).",
     "category": "auth",
     "references": [
@@ -34,56 +34,85 @@
       "name": "Enterprise Admin",
       "type": "user",
       "description": "Administrator who provisions and manages agents",
-      "trust_level": "trusted"
+      "trust_level": "trusted",
+      "protocol_roles": [
+        { "protocol": "scim", "role": "client", "description": "Manages agent lifecycle" }
+      ]
     },
     {
       "id": "scim_server",
       "name": "SCIM Server",
       "type": "server",
       "description": "Identity management system with SCIM Agent Resource extension",
-      "trust_level": "authoritative"
+      "trust_level": "authoritative",
+      "protocol_roles": [
+        { "protocol": "scim", "role": "service_provider", "description": "Stores agent registrations" }
+      ]
     },
     {
       "id": "user",
       "name": "Delegating User",
       "type": "user",
       "description": "Human user who delegates authority to agent",
-      "trust_level": "trusted"
+      "trust_level": "trusted",
+      "protocol_roles": [
+        { "protocol": "oauth", "role": "resource_owner", "description": "Authorizes agent delegation" }
+      ]
     },
     {
       "id": "agent",
       "name": "OAIAF Agent",
       "type": "agent",
       "description": "AI agent with full identity stack integration",
-      "trust_level": "semi_trusted"
+      "trust_level": "semi_trusted",
+      "protocol_roles": [
+        { "protocol": "aauth", "role": "agent", "description": "Requests authorization" },
+        { "protocol": "idjag", "role": "client", "variant": "assertion_issuer", "description": "Creates JWT assertions" },
+        { "protocol": "mcp", "role": "client", "description": "Invokes tools" }
+      ]
     },
     {
       "id": "spire",
       "name": "SPIRE",
       "type": "server",
       "description": "SPIFFE Runtime Environment providing workload identity",
-      "trust_level": "trusted"
+      "trust_level": "trusted",
+      "protocol_roles": [
+        { "protocol": "spiffe", "role": "server", "description": "Issues X.509 SVIDs" }
+      ]
     },
     {
       "id": "auth_server",
       "name": "Authorization Server",
       "type": "authorization_server",
       "description": "OAuth/AAuth server handling authentication and delegation",
-      "trust_level": "authoritative"
+      "trust_level": "authoritative",
+      "protocol_roles": [
+        { "protocol": "oauth", "role": "authorization_server" },
+        { "protocol": "aauth", "role": "access_server", "description": "Issues agent tokens" },
+        { "protocol": "idjag", "role": "token_endpoint", "description": "Exchanges assertions for tokens" }
+      ]
     },
     {
       "id": "pdp",
       "name": "Policy Decision Point",
       "type": "server",
       "description": "AuthZEN-compatible PDP (Cedar, OpenFGA, etc.)",
-      "trust_level": "authoritative"
+      "trust_level": "authoritative",
+      "protocol_roles": [
+        { "protocol": "authzen", "role": "pdp", "description": "Evaluates authorization policies" }
+      ]
     },
     {
       "id": "resource_server",
       "name": "Resource Server",
       "type": "resource_server",
       "description": "Protected enterprise resource",
-      "trust_level": "trusted"
+      "trust_level": "trusted",
+      "protocol_roles": [
+        { "protocol": "oauth", "role": "resource_server" },
+        { "protocol": "authzen", "role": "pep", "description": "Enforces authorization decisions" }
+      ]
     }
   ],
   "phases": [
@@ -308,6 +337,138 @@
         "style": "internal",
         "entities": ["auth_server", "pdp", "resource_server"]
       }
-    }
+    },
+    "components": [
+      {
+        "id": "iga",
+        "name": "Identity Governance",
+        "type": "iga",
+        "description": "Manages agent lifecycle and compliance",
+        "entities": ["scim_server"],
+        "implements": [
+          { "protocol": "scim", "role": "service_provider" }
+        ],
+        "examples": ["SailPoint", "Saviynt", "Okta IGA"]
+      },
+      {
+        "id": "spire_infra",
+        "name": "SPIFFE Infrastructure",
+        "type": "spire",
+        "description": "Provides workload identity via X.509 SVIDs",
+        "entities": ["spire"],
+        "implements": [
+          { "protocol": "spiffe", "role": "server" }
+        ],
+        "examples": ["SPIRE", "Istio"]
+      },
+      {
+        "id": "idp",
+        "name": "Identity Provider",
+        "type": "idp",
+        "description": "OAuth/OIDC authorization server with AAuth and ID-JAG support",
+        "entities": ["auth_server"],
+        "implements": [
+          { "protocol": "oauth", "role": "authorization_server" },
+          { "protocol": "aauth", "role": "access_server" },
+          { "protocol": "idjag", "role": "token_endpoint" }
+        ],
+        "examples": ["Okta", "Entra ID", "Auth0", "Keycloak"]
+      },
+      {
+        "id": "pdp_component",
+        "name": "Policy Engine",
+        "type": "pdp",
+        "description": "Fine-grained authorization via AuthZEN API",
+        "entities": ["pdp"],
+        "implements": [
+          { "protocol": "authzen", "role": "pdp" }
+        ],
+        "examples": ["Topaz", "Cedar", "OpenFGA", "OPA"]
+      },
+      {
+        "id": "gateway",
+        "name": "API Gateway / PEP",
+        "type": "gateway",
+        "description": "Enforces authorization decisions on API requests",
+        "entities": ["resource_server"],
+        "implements": [
+          { "protocol": "oauth", "role": "resource_server" },
+          { "protocol": "authzen", "role": "pep" }
+        ],
+        "examples": ["Kong", "Envoy", "AWS API Gateway"]
+      }
+    ],
+    "trust_relations": [
+      {
+        "id": "admin_scim",
+        "from": "admin",
+        "to": "iga",
+        "type": "provisions",
+        "credentials": ["api_key"],
+        "description": "Admin provisions agents via SCIM API"
+      },
+      {
+        "id": "spire_agent",
+        "from": "spire_infra",
+        "to": "agent",
+        "type": "attests",
+        "credentials": ["x509_svid"],
+        "description": "SPIRE attests agent workload identity"
+      },
+      {
+        "id": "user_idp",
+        "from": "user",
+        "to": "idp",
+        "type": "authenticates",
+        "credentials": ["id_token"],
+        "description": "User authenticates to IdP"
+      },
+      {
+        "id": "agent_idp",
+        "from": "agent",
+        "to": "idp",
+        "type": "authenticates",
+        "credentials": ["jwt_assertion", "x509_svid"],
+        "description": "Agent authenticates with ID-JAG assertion over mTLS"
+      },
+      {
+        "id": "idp_agent",
+        "from": "idp",
+        "to": "agent",
+        "type": "issues",
+        "credentials": ["access_token"],
+        "description": "IdP issues composite access token"
+      },
+      {
+        "id": "user_agent",
+        "from": "user",
+        "to": "agent",
+        "type": "delegates",
+        "description": "User delegates authority to agent"
+      },
+      {
+        "id": "gateway_pdp",
+        "from": "gateway",
+        "to": "pdp_component",
+        "type": "validates",
+        "credentials": ["access_token"],
+        "description": "Gateway queries PDP for authorization"
+      },
+      {
+        "id": "pdp_gateway",
+        "from": "pdp_component",
+        "to": "gateway",
+        "type": "authorizes",
+        "description": "PDP returns authorization decision"
+      },
+      {
+        "id": "idp_gateway",
+        "from": "idp",
+        "to": "gateway",
+        "type": "trusts",
+        "credentials": ["access_token"],
+        "description": "Gateway trusts tokens from IdP"
+      }
+    ]
   }
 }
