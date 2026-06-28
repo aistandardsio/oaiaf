@@ -11,24 +11,24 @@
 [![Visualization][viz-svg]][viz-url]
 [![License][license-svg]][license-url]
 
- [go-ci-svg]: https://github.com/aistandardsio/agent-protocols/actions/workflows/go-ci.yaml/badge.svg?branch=main
- [go-ci-url]: https://github.com/aistandardsio/agent-protocols/actions/workflows/go-ci.yaml
- [go-lint-svg]: https://github.com/aistandardsio/agent-protocols/actions/workflows/go-lint.yaml/badge.svg?branch=main
- [go-lint-url]: https://github.com/aistandardsio/agent-protocols/actions/workflows/go-lint.yaml
- [go-sast-svg]: https://github.com/aistandardsio/agent-protocols/actions/workflows/go-sast-codeql.yaml/badge.svg?branch=main
- [go-sast-url]: https://github.com/aistandardsio/agent-protocols/actions/workflows/go-sast-codeql.yaml
- [goreport-svg]: https://goreportcard.com/badge/github.com/aistandardsio/agent-protocols
- [goreport-url]: https://goreportcard.com/report/github.com/aistandardsio/agent-protocols
- [docs-godoc-svg]: https://pkg.go.dev/badge/github.com/aistandardsio/agent-protocols
- [docs-godoc-url]: https://pkg.go.dev/github.com/aistandardsio/agent-protocols
- [docs-mkdoc-svg]: https://img.shields.io/badge/Go-dev%20guide-blue.svg
- [docs-mkdoc-url]: https://aistandards.io/agent-protocols
- [viz-svg]: https://img.shields.io/badge/visualizaton-Go-blue.svg
- [viz-url]: https://mango-dune-07a8b7110.1.azurestaticapps.net/?repo=aistandardsio%2Fagent-protocols
- [loc-svg]: https://tokei.rs/b1/github/grokify/agent-protocols
- [repo-url]: https://github.com/aistandardsio/agent-protocols
+ [go-ci-svg]: https://github.com/aistandardsio/oaiaf/actions/workflows/go-ci.yaml/badge.svg?branch=main
+ [go-ci-url]: https://github.com/aistandardsio/oaiaf/actions/workflows/go-ci.yaml
+ [go-lint-svg]: https://github.com/aistandardsio/oaiaf/actions/workflows/go-lint.yaml/badge.svg?branch=main
+ [go-lint-url]: https://github.com/aistandardsio/oaiaf/actions/workflows/go-lint.yaml
+ [go-sast-svg]: https://github.com/aistandardsio/oaiaf/actions/workflows/go-sast-codeql.yaml/badge.svg?branch=main
+ [go-sast-url]: https://github.com/aistandardsio/oaiaf/actions/workflows/go-sast-codeql.yaml
+ [goreport-svg]: https://goreportcard.com/badge/github.com/aistandardsio/oaiaf
+ [goreport-url]: https://goreportcard.com/report/github.com/aistandardsio/oaiaf
+ [docs-godoc-svg]: https://pkg.go.dev/badge/github.com/aistandardsio/oaiaf
+ [docs-godoc-url]: https://pkg.go.dev/github.com/aistandardsio/oaiaf
+ [docs-mkdoc-svg]: https://img.shields.io/badge/docs-MkDocs-blue.svg
+ [docs-mkdoc-url]: https://aistandards.io/oaiaf
+ [viz-svg]: https://img.shields.io/badge/visualization-Go-blue.svg
+ [viz-url]: https://mango-dune-07a8b7110.1.azurestaticapps.net/?repo=aistandardsio%2Foaiaf
+ [loc-svg]: https://tokei.rs/b1/github/aistandardsio/oaiaf
+ [repo-url]: https://github.com/aistandardsio/oaiaf
  [license-svg]: https://img.shields.io/badge/license-MIT-blue.svg
- [license-url]: https://github.com/aistandardsio/agent-protocols/blob/main/LICENSE
+ [license-url]: https://github.com/aistandardsio/oaiaf/blob/main/LICENSE
 
 OAIAF provides a reference architecture for building AI agents with built-in support for agent authorization protocols including ID-JAG, AAuth, AIMS, A2A, AuthZEN, and MCP.
 
@@ -281,21 +281,11 @@ provider := oaiaf.NewAIMSProvider(agent,
 err := provider.FetchSVIDFromWorkloadAPI(ctx)
 ```
 
-## Architecture
-
-OAIAF implements a five-layer identity stack for enterprise AI agents:
-
-| Layer | Standard | Purpose |
-|-------|----------|---------|
-| Authorization | AuthZEN, Cedar, OpenFGA | Access control decisions |
-| Human Delegation | OAuth 2.x + ID-JAG | Chain of authority |
-| Agent Authentication | AAuth | Agent identity |
-| Workload Identity | WIMSE/SPIFFE | Infrastructure binding |
-| Lifecycle | SCIM Agent Resource | Agent provisioning |
+## Architecture Documentation
 
 See [docs/architecture.md](docs/architecture.md) for comprehensive documentation including:
 
-- Five-layer identity stack diagrams
+- Five-layer identity stack details
 - Protocol specifications and flows
 - Agent type reference matrix
 - OAIAF integration examples

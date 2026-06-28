@@ -16,10 +16,10 @@ OAIAF provides a reference architecture for enterprise AI agent identity and aut
 │  "What can this agent do?" → Policy-based access control decisions         │
 ├────────────────────────────────────────────────────────────────────────────┤
 │  Layer 4: HUMAN DELEGATION                                                 │
-│  ┌───────────────────────────┐  ┌───────────────────────────┐              │
-│  │      OAuth 2.x            │  │        ID-JAG             │              │
-│  │   (Authorization)         │  │  (Identity Assertion)     │              │
-│  └───────────────────────────┘  └───────────────────────────┘              │
+│  ┌───────────────────────────┐  ┌──────────────────────────┐               │
+│  │      OAuth 2.x            │  │        ID-JAG            │               │
+│  │   (Authorization)         │  │  (Identity Assertion)    │               │
+│  └───────────────────────────┘  └──────────────────────────┘               │
 │  "Who delegated authority?" → Chain of authority from human to agent       │
 ├────────────────────────────────────────────────────────────────────────────┤
 │  Layer 3: AGENT AUTHENTICATION                                             │
@@ -30,10 +30,10 @@ OAIAF provides a reference architecture for enterprise AI agent identity and aut
 │  "Which autonomous agent is this?" → Cryptographic agent identity          │
 ├────────────────────────────────────────────────────────────────────────────┤
 │  Layer 2: WORKLOAD IDENTITY                                                │
-│  ┌───────────────────────────┐  ┌───────────────────────────┐              │
-│  │         WIMSE             │  │        SPIFFE             │              │
-│  │    (Workload Identity)    │  │    (X.509 SVIDs)          │              │
-│  └───────────────────────────┘  └───────────────────────────┘              │
+│  ┌───────────────────────────┐  ┌──────────────────────────┐               │
+│  │         WIMSE             │  │        SPIFFE            │               │
+│  │    (Workload Identity)    │  │    (X.509 SVIDs)         │               │
+│  └───────────────────────────┘  └──────────────────────────┘               │
 │  "Which workload hosts this agent?" → Infrastructure-level identity        │
 ├────────────────────────────────────────────────────────────────────────────┤
 │  Layer 1: LIFECYCLE MANAGEMENT                                             │
@@ -150,7 +150,7 @@ Generated protocol artifacts
 
 ### Interoperability
 
-- **[A2A](https://github.com/a2a-protocol/a2a)** - Agent-to-Agent discovery and delegation
+- **[A2A](https://google.github.io/A2A/)** - Agent-to-Agent discovery and delegation
 - **[MCP](https://spec.modelcontextprotocol.io/)** - Model Context Protocol for tool integration
 
 ## Getting Started
