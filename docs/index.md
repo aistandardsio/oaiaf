@@ -7,42 +7,42 @@ OAIAF provides a reference architecture for enterprise AI agent identity and aut
 ## The Five-Layer Agent Identity Stack
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  Layer 5: AUTHORIZATION                                                     │
+┌────────────────────────────────────────────────────────────────────────────┐
+│  Layer 5: AUTHORIZATION                                                    │
 │  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐                   │
 │  │   AuthZEN     │  │    Cedar      │  │   OpenFGA     │                   │
 │  │   (API)       │  │   (ABAC)      │  │   (ReBAC)     │                   │
 │  └───────────────┘  └───────────────┘  └───────────────┘                   │
 │  "What can this agent do?" → Policy-based access control decisions         │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  Layer 4: HUMAN DELEGATION                                                  │
+├────────────────────────────────────────────────────────────────────────────┤
+│  Layer 4: HUMAN DELEGATION                                                 │
 │  ┌───────────────────────────┐  ┌───────────────────────────┐              │
 │  │      OAuth 2.x            │  │        ID-JAG             │              │
 │  │   (Authorization)         │  │  (Identity Assertion)     │              │
 │  └───────────────────────────┘  └───────────────────────────┘              │
 │  "Who delegated authority?" → Chain of authority from human to agent       │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  Layer 3: AGENT AUTHENTICATION                                              │
+├────────────────────────────────────────────────────────────────────────────┤
+│  Layer 3: AGENT AUTHENTICATION                                             │
 │  ┌─────────────────────────────────────────────────────────┐               │
-│  │                        AAuth                             │               │
-│  │            (HTTP Signatures + Mission Scope)             │               │
+│  │                        AAuth                            │               │
+│  │            (HTTP Signatures + Mission Scope)            │               │
 │  └─────────────────────────────────────────────────────────┘               │
 │  "Which autonomous agent is this?" → Cryptographic agent identity          │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  Layer 2: WORKLOAD IDENTITY                                                 │
+├────────────────────────────────────────────────────────────────────────────┤
+│  Layer 2: WORKLOAD IDENTITY                                                │
 │  ┌───────────────────────────┐  ┌───────────────────────────┐              │
 │  │         WIMSE             │  │        SPIFFE             │              │
 │  │    (Workload Identity)    │  │    (X.509 SVIDs)          │              │
 │  └───────────────────────────┘  └───────────────────────────┘              │
 │  "Which workload hosts this agent?" → Infrastructure-level identity        │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  Layer 1: LIFECYCLE MANAGEMENT                                              │
+├────────────────────────────────────────────────────────────────────────────┤
+│  Layer 1: LIFECYCLE MANAGEMENT                                             │
 │  ┌─────────────────────────────────────────────────────────┐               │
-│  │                  SCIM Agent Resource                     │               │
-│  │          (Provisioning, Capabilities, Metadata)          │               │
+│  │                  SCIM Agent Resource                    │               │
+│  │          (Provisioning, Capabilities, Metadata)         │               │
 │  └─────────────────────────────────────────────────────────┘               │
 │  "What agents exist?" → Agent registration and capability declaration      │
-└─────────────────────────────────────────────────────────────────────────────┘
+└────────────────────────────────────────────────────────────────────────────┘
 
 Cross-Cutting Concerns:
 ┌─────────────────────────┐  ┌─────────────────────────┐  ┌─────────────────┐
