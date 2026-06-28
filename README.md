@@ -1,4 +1,6 @@
-# OAIAF - OpenAI Agent Framework
+# Open Agent Internet Architecture Framework (OAIAF)
+
+**An Open Standards Reference Architecture for Enterprise AI Agents**
 
 [![Go CI][go-ci-svg]][go-ci-url]
 [![Go Lint][go-lint-svg]][go-lint-url]
@@ -28,7 +30,48 @@
  [license-svg]: https://img.shields.io/badge/license-MIT-blue.svg
  [license-url]: https://github.com/aistandardsio/agent-protocols/blob/main/LICENSE
 
-OAIAF provides a framework for building AI agents with built-in support for agent authorization protocols including ID-JAG, AAuth, and AIMS.
+OAIAF provides a reference architecture for building AI agents with built-in support for agent authorization protocols including ID-JAG, AAuth, AIMS, A2A, AuthZEN, and MCP.
+
+## About the Name
+
+Each word in **Open Agent Internet Architecture Framework** was chosen deliberately:
+
+| Term | Meaning |
+|------|---------|
+| **Open** | Emphasizes open standards, vendor neutrality, and interoperability—not necessarily open source |
+| **Agent** | Clearly defines the domain as AI agents |
+| **Internet** | Reflects that the framework is grounded in Internet standards from IETF, OpenID Foundation, W3C, Linux Foundation, and related communities |
+| **Architecture** | Distinguishes it from AI governance, ethics, or policy-only frameworks by making it clear this is a technical reference architecture |
+| **Framework** | Positions it alongside mature architecture frameworks like TOGAF and SABSA rather than as a single specification |
+
+> **Open** refers to the use of open Internet standards and interoperable architectures developed by standards organizations and open industry communities. It does not imply that every implementation must be open source.
+
+## Ecosystem Position
+
+OAIAF sits within a broader ecosystem of standards and tooling:
+
+```
+Standards Catalog Framework (SCF)
+        │
+        ▼
+Agent Standards Catalog (ASC)
+        │
+        ▼
+Open Agent Internet Architecture Framework (OAIAF)
+        │
+        ▼
+agent-protocols
+        │
+        ▼
+Generated protocol artifacts
+(SCIM, AAuth, A2A, MCP, AuthZEN, etc.)
+```
+
+| Repository | Purpose |
+|------------|---------|
+| [oaiaf](https://github.com/aistandardsio/oaiaf) | Reference architecture documentation and orchestration examples |
+| [agent-protocols](https://github.com/aistandardsio/agent-protocols) | Go implementations of individual protocols (AAuth, ID-JAG, AIMS, A2A, AuthZEN) |
+| [agentauth](https://github.com/plexusone/agentauth) | Production orchestration layer combining protocols for deployment |
 
 ## Features
 
