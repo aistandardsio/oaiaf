@@ -1,0 +1,37 @@
+@startuml
+title AIMS/SPIFFE Workload Identity Authentication
+
+participant "OAIAF Agent" as agent
+participant "SPIRE Agent" as spire_agent
+participant "Authorization Server" as auth_server
+participant "Resource Server" as resource_server
+
+
+== SVID Acquisition ==
+agent -> spire_agent: FetchX509SVID()
+via Workload API socket
+spire_agent -> spire_agent: Workload Attestation
+(PID, namespace, container)
+spire_agent --> agent: X.509 SVID + Trust Bundle
+SPIFFE ID: spiffe://example.com/agent/x
+
+== Token Exchange ==
+agent -> auth_server: POST /token (mTLS)
+grant_type=token-exchange
+subject_token_type=svid
+auth_server -> auth_server: Validate SVID
+- Verify certificate chain
+- Check SPIFFE ID format
+- Match registration
+auth_server --> agent: 200 OK
+{access_token, token_type, scope}
+
+== Resource Access ==
+agent -> resource_server: GET /api/resource (mTLS)
+Authorization: Bearer {token}
+resource_server -> resource_server: Validate mTLS + Token
+Match SPIFFE IDs
+resource_server --> agent: 200 OK
+{resource data}
+
+@enduml

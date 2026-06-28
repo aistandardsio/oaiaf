@@ -1,0 +1,248 @@
+{
+  "protocol": {
+    "id": "aauth-consent-flow",
+    "name": "AAuth Human-in-the-Loop Consent Flow",
+    "version": "1.0",
+    "description": "Agent Authorization Protocol (AAuth) enables human oversight for sensitive agent operations through an interactive consent flow with polling-based status updates.",
+    "category": "auth",
+    "references": [
+      {
+        "name": "AAuth Specification",
+        "url": "https://datatracker.ietf.org/doc/draft-hardt-oauth-aauth-protocol/"
+      }
+    ]
+  },
+  "entities": [
+    {
+      "id": "agent",
+      "name": "OAIAF Agent",
+      "type": "agent",
+      "description": "AI agent using OAIAF framework with AAuthProvider",
+      "trust_level": "semi_trusted"
+    },
+    {
+      "id": "user",
+      "name": "Human User",
+      "type": "user",
+      "description": "Human who reviews and approves/denies agent requests",
+      "trust_level": "trusted"
+    },
+    {
+      "id": "auth_server",
+      "name": "Authorization Server",
+      "type": "authorization_server",
+      "description": "AAuth-compatible authorization server managing consent flows",
+      "trust_level": "authoritative"
+    },
+    {
+      "id": "resource_server",
+      "name": "Resource Server",
+      "type": "resource_server",
+      "description": "Protected API requiring authorized access",
+      "trust_level": "trusted"
+    }
+  ],
+  "phases": [
+    {
+      "id": "authorization_request",
+      "name": "Authorization Request",
+      "description": "Agent initiates authorization request with mission scope"
+    },
+    {
+      "id": "consent_flow",
+      "name": "Consent Flow",
+      "description": "Human reviews and approves/denies the request"
+    },
+    {
+      "id": "token_issuance",
+      "name": "Token Issuance",
+      "description": "Authorization server issues token after consent"
+    },
+    {
+      "id": "resource_access",
+      "name": "Resource Access",
+      "description": "Agent accesses resource with approved token"
+    }
+  ],
+  "flows": [
+    {
+      "from": "agent",
+      "to": "auth_server",
+      "action": "authorization_request",
+      "label": "POST /authorize\n{agent_token, scope, user_id}",
+      "mode": "request",
+      "phase": "authorization_request",
+      "description": "Agent requests authorization for specific scope/mission",
+      "sequence": 1
+    },
+    {
+      "from": "auth_server",
+      "to": "auth_server",
+      "action": "check_policy",
+      "label": "Check Auto-Approval Policy",
+      "mode": "interactive",
+      "phase": "authorization_request",
+      "description": "Server checks if scope can be auto-approved based on policy",
+      "sequence": 2
+    },
+    {
+      "from": "auth_server",
+      "to": "agent",
+      "action": "consent_required",
+      "label": "202 Accepted\n{consent_uri, status_uri, mission_id}",
+      "mode": "response",
+      "phase": "authorization_request",
+      "description": "Server returns consent URI for human approval",
+      "sequence": 3,
+      "condition": "consent_required"
+    },
+    {
+      "from": "agent",
+      "to": "user",
+      "action": "notify_consent",
+      "label": "Display Consent URI\n(browser, notification, etc.)",
+      "mode": "interactive",
+      "phase": "consent_flow",
+      "description": "Agent notifies user that consent is required via ConsentHandler",
+      "sequence": 4
+    },
+    {
+      "from": "user",
+      "to": "auth_server",
+      "action": "review_request",
+      "label": "GET {consent_uri}\nReview Request Details",
+      "mode": "request",
+      "phase": "consent_flow",
+      "description": "User opens consent page to review agent request details",
+      "sequence": 5
+    },
+    {
+      "from": "auth_server",
+      "to": "user",
+      "action": "consent_page",
+      "label": "Consent Page\n(scope, agent info, mission details)",
+      "mode": "response",
+      "phase": "consent_flow",
+      "description": "Server displays consent page with request details",
+      "sequence": 6
+    },
+    {
+      "from": "user",
+      "to": "auth_server",
+      "action": "approve",
+      "label": "POST /consent\n{approved: true}",
+      "mode": "request",
+      "phase": "consent_flow",
+      "description": "User approves the agent request",
+      "sequence": 7,
+      "condition": "user_approves",
+      "annotations": [
+        {
+          "type": "security",
+          "text": "User must be authenticated before approving"
+        }
+      ]
+    },
+    {
+      "from": "user",
+      "to": "auth_server",
+      "action": "deny",
+      "label": "POST /consent\n{approved: false}",
+      "mode": "request",
+      "phase": "consent_flow",
+      "description": "User denies the agent request",
+      "sequence": 7,
+      "condition": "user_denies"
+    },
+    {
+      "from": "agent",
+      "to": "auth_server",
+      "action": "poll_status",
+      "label": "GET {status_uri}",
+      "mode": "request",
+      "phase": "token_issuance",
+      "description": "Agent polls for consent status (every PollInterval)",
+      "sequence": 8,
+      "note": "Polls until approved, denied, or timeout"
+    },
+    {
+      "from": "auth_server",
+      "to": "agent",
+      "action": "status_pending",
+      "label": "200 OK\n{status: pending}",
+      "mode": "response",
+      "phase": "token_issuance",
+      "description": "Consent still pending, agent continues polling",
+      "sequence": 9,
+      "condition": "pending"
+    },
+    {
+      "from": "auth_server",
+      "to": "agent",
+      "action": "status_approved",
+      "label": "200 OK\n{status: approved, access_token}",
+      "mode": "response",
+      "phase": "token_issuance",
+      "description": "Consent approved, server returns access token",
+      "sequence": 9,
+      "condition": "approved",
+      "security": {
+        "token": "access_token",
+        "description": "Mission-scoped bearer token"
+      }
+    },
+    {
+      "from": "auth_server",
+      "to": "agent",
+      "action": "status_denied",
+      "label": "200 OK\n{status: denied, error}",
+      "mode": "response",
+      "phase": "token_issuance",
+      "description": "Consent denied by user",
+      "sequence": 9,
+      "condition": "denied",
+      "annotations": [
+        {
+          "type": "error",
+          "text": "Agent must not retry without new user interaction"
+        }
+      ]
+    },
+    {
+      "from": "agent",
+      "to": "resource_server",
+      "action": "api_request",
+      "label": "POST /api/action\nAuthorization: Bearer {token}",
+      "mode": "request",
+      "phase": "resource_access",
+      "description": "Agent performs approved action with mission-scoped token",
+      "sequence": 10,
+      "security": {
+        "requires": ["token"],
+        "token": "access_token"
+      }
+    },
+    {
+      "from": "resource_server",
+      "to": "agent",
+      "action": "api_response",
+      "label": "200 OK\n{result}",
+      "mode": "response",
+      "phase": "resource_access",
+      "description": "Resource server returns action result",
+      "sequence": 11
+    }
+  ],
+  "metadata": {
+    "tokens": [
+      {
+        "id": "access_token",
+        "name": "Mission-Scoped Access Token",
+        "type": "jwt",
+        "issuer": "auth_server",
+        "audience": "resource_server",
+        "binding": "bearer"
+      }
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+sequenceDiagram
+    title A2A Agent-to-Agent Delegation
+    autonumber
+
+    participant user as Human User
+    participant orchestrator as Orchestrator Agent
+    participant specialist as Specialist Agent
+    participant auth_server as Authorization Server
+    participant resource_server as Resource Server
+
+    rect rgb(240, 240, 240)
+    note right of user: Agent Discovery
+    user->>orchestrator: Review PR &#35;123 for security issues
+    orchestrator->>specialist: GET /.well-known/agent.json
+    specialist-->>orchestrator: Agent Card
+{capabilities&&#35;58; [security-scan],
+endpoints, auth}
+    end
+
+    rect rgb(240, 240, 240)
+    note right of user: Task Delegation
+    orchestrator->>auth_server: POST /token
+grant_type=delegation
+delegate_to={specialist_id}
+scope=security-scan&&#35;58;pr-123
+    auth_server->>auth_server: Validate&&#35;58;
+- Orchestrator can delegate
+- Scope is subset
+- Specialist registered
+    auth_server-->>orchestrator: Delegation Token
+{sub&&#35;58; specialist, act&&#35;58; [{orchestrator}, {user}]}
+    end
+
+    rect rgb(240, 240, 240)
+    note right of user: Task Execution
+    orchestrator->>specialist: POST /invoke
+{task&&#35;58; security-scan, target&&#35;58; pr-123}
+Authorization&&#35;58; Bearer {delegation_token}
+    specialist->>resource_server: GET /repos/acme/backend/pulls/123/files
+Authorization&&#35;58; Bearer {delegation_token}
+    resource_server->>resource_server: Validate delegation chain
+Log&&#35;58; user -> orchestrator -> specialist
+    resource_server-->>specialist: 200 OK
+{files&&#35;58; [...]}
+    specialist->>specialist: Security Analysis
+    end
+
+    rect rgb(240, 240, 240)
+    note right of user: Task Completion
+    specialist-->>orchestrator: 200 OK
+{findings&&#35;58; [...], risk_level&&#35;58; medium}
+    orchestrator-->>user: Security Review Complete
+2 vulnerabilities found
+    end

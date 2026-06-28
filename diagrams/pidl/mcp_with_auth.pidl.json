@@ -1,0 +1,215 @@
+{
+  "protocol": {
+    "id": "mcp-with-oaiaf-auth",
+    "name": "MCP Tool Invocation with OAIAF Authorization",
+    "version": "1.0",
+    "description": "Model Context Protocol (MCP) tool invocation integrated with OAIAF authorization, demonstrating how agents authenticate to MCP servers and access protected tools.",
+    "category": "agent",
+    "references": [
+      {
+        "name": "Model Context Protocol",
+        "url": "https://spec.modelcontextprotocol.io/"
+      }
+    ]
+  },
+  "entities": [
+    {
+      "id": "agent",
+      "name": "OAIAF Agent",
+      "type": "agent",
+      "description": "AI agent using OAIAF framework with MCP client",
+      "trust_level": "semi_trusted"
+    },
+    {
+      "id": "mcp_server",
+      "name": "MCP Server",
+      "type": "tool_server",
+      "description": "MCP server providing tools and resources",
+      "trust_level": "trusted"
+    },
+    {
+      "id": "auth_server",
+      "name": "Authorization Server",
+      "type": "authorization_server",
+      "description": "OAuth server issuing tokens for tool access",
+      "trust_level": "authoritative"
+    },
+    {
+      "id": "external_api",
+      "name": "External API",
+      "type": "resource_server",
+      "description": "External service accessed by MCP tool",
+      "trust_level": "trusted"
+    }
+  ],
+  "phases": [
+    {
+      "id": "initialization",
+      "name": "MCP Initialization",
+      "description": "Agent connects to MCP server and discovers tools"
+    },
+    {
+      "id": "authentication",
+      "name": "Tool Authentication",
+      "description": "Agent authenticates for tool access"
+    },
+    {
+      "id": "invocation",
+      "name": "Tool Invocation",
+      "description": "Agent invokes tool with authorization"
+    },
+    {
+      "id": "execution",
+      "name": "Tool Execution",
+      "description": "Tool executes and accesses external resources"
+    }
+  ],
+  "flows": [
+    {
+      "from": "agent",
+      "to": "mcp_server",
+      "action": "initialize",
+      "label": "initialize\n{protocolVersion, capabilities}",
+      "mode": "request",
+      "phase": "initialization",
+      "description": "Agent initiates MCP connection with capabilities",
+      "sequence": 1
+    },
+    {
+      "from": "mcp_server",
+      "to": "agent",
+      "action": "initialize_response",
+      "label": "initialize response\n{serverInfo, capabilities}",
+      "mode": "response",
+      "phase": "initialization",
+      "description": "Server returns its capabilities",
+      "sequence": 2
+    },
+    {
+      "from": "agent",
+      "to": "mcp_server",
+      "action": "list_tools",
+      "label": "tools/list",
+      "mode": "request",
+      "phase": "initialization",
+      "description": "Agent requests available tools",
+      "sequence": 3
+    },
+    {
+      "from": "mcp_server",
+      "to": "agent",
+      "action": "tools_list",
+      "label": "tools/list response\n[{name: search_code, inputSchema, auth_required: true}]",
+      "mode": "response",
+      "phase": "initialization",
+      "description": "Server returns tool list with auth requirements",
+      "sequence": 4,
+      "annotations": [
+        {
+          "type": "info",
+          "text": "Tools may indicate authentication requirements"
+        }
+      ]
+    },
+    {
+      "from": "agent",
+      "to": "auth_server",
+      "action": "token_request",
+      "label": "POST /token\ngrant_type=client_credentials\nscope=mcp:search_code",
+      "mode": "request",
+      "phase": "authentication",
+      "description": "Agent requests token for specific MCP tool scope",
+      "sequence": 5,
+      "security": {
+        "requires": ["signature"],
+        "description": "ID-JAG or client credentials"
+      }
+    },
+    {
+      "from": "auth_server",
+      "to": "agent",
+      "action": "token_response",
+      "label": "200 OK\n{access_token, scope: mcp:search_code}",
+      "mode": "response",
+      "phase": "authentication",
+      "description": "Auth server returns tool-scoped token",
+      "sequence": 6,
+      "security": {
+        "token": "access_token",
+        "description": "Token scoped to specific MCP tools"
+      }
+    },
+    {
+      "from": "agent",
+      "to": "mcp_server",
+      "action": "call_tool",
+      "label": "tools/call\n{name: search_code, arguments: {query: \"sql injection\"}}\nAuthorization: Bearer {token}",
+      "mode": "tool_call",
+      "phase": "invocation",
+      "description": "Agent invokes tool with authorization header",
+      "sequence": 7,
+      "security": {
+        "requires": ["token"],
+        "token": "access_token"
+      }
+    },
+    {
+      "from": "mcp_server",
+      "to": "mcp_server",
+      "action": "validate_token",
+      "label": "Validate Token\nCheck scope: mcp:search_code",
+      "mode": "interactive",
+      "phase": "invocation",
+      "description": "MCP server validates token has required scope",
+      "sequence": 8
+    },
+    {
+      "from": "mcp_server",
+      "to": "external_api",
+      "action": "api_call",
+      "label": "GET /api/search\n?q=sql+injection",
+      "mode": "request",
+      "phase": "execution",
+      "description": "Tool makes request to external API",
+      "sequence": 9,
+      "annotations": [
+        {
+          "type": "security",
+          "text": "Tool may use its own credentials for external API"
+        }
+      ]
+    },
+    {
+      "from": "external_api",
+      "to": "mcp_server",
+      "action": "api_response",
+      "label": "200 OK\n{results: [...]}",
+      "mode": "response",
+      "phase": "execution",
+      "description": "External API returns search results",
+      "sequence": 10
+    },
+    {
+      "from": "mcp_server",
+      "to": "agent",
+      "action": "tool_result",
+      "label": "tools/call response\n{content: [{type: text, text: \"Found 3 matches...\"}]}",
+      "mode": "tool_result",
+      "phase": "execution",
+      "description": "MCP server returns formatted tool result",
+      "sequence": 11
+    }
+  ],
+  "metadata": {
+    "tokens": [
+      {
+        "id": "access_token",
+        "name": "MCP Tool Token",
+        "type": "jwt",
+        "issuer": "auth_server",
+        "audience": "mcp_server",
+        "binding": "bearer"
+      }
+    ]
+  }
+}

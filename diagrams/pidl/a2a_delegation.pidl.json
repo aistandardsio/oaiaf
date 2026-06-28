@@ -1,0 +1,250 @@
+{
+  "protocol": {
+    "id": "a2a-agent-delegation",
+    "name": "A2A Agent-to-Agent Delegation",
+    "version": "1.0",
+    "description": "Agent-to-Agent (A2A) protocol enables agents to discover, authenticate, and delegate tasks to other agents while maintaining accountability through delegation chains.",
+    "category": "agent",
+    "references": [
+      {
+        "name": "A2A Protocol",
+        "url": "https://github.com/a2a-protocol/a2a"
+      }
+    ]
+  },
+  "entities": [
+    {
+      "id": "user",
+      "name": "Human User",
+      "type": "user",
+      "description": "User who initiates task with orchestrator agent",
+      "trust_level": "trusted"
+    },
+    {
+      "id": "orchestrator",
+      "name": "Orchestrator Agent",
+      "type": "agent",
+      "description": "Primary agent that coordinates task execution",
+      "trust_level": "semi_trusted"
+    },
+    {
+      "id": "specialist",
+      "name": "Specialist Agent",
+      "type": "delegated_agent",
+      "description": "Secondary agent with specialized capabilities",
+      "trust_level": "semi_trusted"
+    },
+    {
+      "id": "auth_server",
+      "name": "Authorization Server",
+      "type": "authorization_server",
+      "description": "OAuth server managing delegation tokens",
+      "trust_level": "authoritative"
+    },
+    {
+      "id": "resource_server",
+      "name": "Resource Server",
+      "type": "resource_server",
+      "description": "Protected resource accessed by specialist",
+      "trust_level": "trusted"
+    }
+  ],
+  "phases": [
+    {
+      "id": "discovery",
+      "name": "Agent Discovery",
+      "description": "Orchestrator discovers specialist agent via A2A"
+    },
+    {
+      "id": "delegation",
+      "name": "Task Delegation",
+      "description": "Orchestrator delegates task with constrained scope"
+    },
+    {
+      "id": "execution",
+      "name": "Task Execution",
+      "description": "Specialist executes delegated task"
+    },
+    {
+      "id": "completion",
+      "name": "Task Completion",
+      "description": "Results returned through delegation chain"
+    }
+  ],
+  "flows": [
+    {
+      "from": "user",
+      "to": "orchestrator",
+      "action": "task_request",
+      "label": "Review PR #123 for security issues",
+      "mode": "request",
+      "phase": "discovery",
+      "description": "User requests complex task from orchestrator",
+      "sequence": 1
+    },
+    {
+      "from": "orchestrator",
+      "to": "specialist",
+      "action": "discover_agent",
+      "label": "GET /.well-known/agent.json",
+      "mode": "request",
+      "phase": "discovery",
+      "description": "Orchestrator discovers specialist capabilities via A2A",
+      "sequence": 2
+    },
+    {
+      "from": "specialist",
+      "to": "orchestrator",
+      "action": "agent_card",
+      "label": "Agent Card\n{capabilities: [security-scan],\nendpoints, auth}",
+      "mode": "response",
+      "phase": "discovery",
+      "description": "Specialist returns A2A agent card with capabilities",
+      "sequence": 3
+    },
+    {
+      "from": "orchestrator",
+      "to": "auth_server",
+      "action": "delegation_request",
+      "label": "POST /token\ngrant_type=delegation\ndelegate_to={specialist_id}\nscope=security-scan:pr-123",
+      "mode": "request",
+      "phase": "delegation",
+      "description": "Orchestrator requests delegation token for specialist",
+      "sequence": 4,
+      "security": {
+        "requires": ["token"],
+        "description": "Orchestrator's token with delegation permission"
+      }
+    },
+    {
+      "from": "auth_server",
+      "to": "auth_server",
+      "action": "validate_delegation",
+      "label": "Validate:\n- Orchestrator can delegate\n- Scope is subset\n- Specialist registered",
+      "mode": "interactive",
+      "phase": "delegation",
+      "description": "Auth server validates delegation is permitted",
+      "sequence": 5,
+      "annotations": [
+        {
+          "type": "security",
+          "text": "Delegation scope must be subset of orchestrator's scope"
+        }
+      ]
+    },
+    {
+      "from": "auth_server",
+      "to": "orchestrator",
+      "action": "delegation_token",
+      "label": "Delegation Token\n{sub: specialist, act: [{orchestrator}, {user}]}",
+      "mode": "response",
+      "phase": "delegation",
+      "description": "Auth server issues token with full delegation chain",
+      "sequence": 6,
+      "security": {
+        "token": "delegation_token",
+        "description": "Token contains full actor chain"
+      }
+    },
+    {
+      "from": "orchestrator",
+      "to": "specialist",
+      "action": "invoke_task",
+      "label": "POST /invoke\n{task: security-scan, target: pr-123}\nAuthorization: Bearer {delegation_token}",
+      "mode": "request",
+      "phase": "execution",
+      "description": "Orchestrator invokes specialist with delegation token",
+      "sequence": 7
+    },
+    {
+      "from": "specialist",
+      "to": "resource_server",
+      "action": "access_resource",
+      "label": "GET /repos/acme/backend/pulls/123/files\nAuthorization: Bearer {delegation_token}",
+      "mode": "request",
+      "phase": "execution",
+      "description": "Specialist accesses resource using delegation token",
+      "sequence": 8,
+      "security": {
+        "requires": ["token"],
+        "token": "delegation_token",
+        "description": "Delegation chain visible for audit"
+      }
+    },
+    {
+      "from": "resource_server",
+      "to": "resource_server",
+      "action": "validate_chain",
+      "label": "Validate delegation chain\nLog: user -> orchestrator -> specialist",
+      "mode": "interactive",
+      "phase": "execution",
+      "description": "Resource server validates and logs full delegation chain",
+      "sequence": 9,
+      "annotations": [
+        {
+          "type": "info",
+          "text": "Full accountability chain preserved for audit"
+        }
+      ]
+    },
+    {
+      "from": "resource_server",
+      "to": "specialist",
+      "action": "resource_data",
+      "label": "200 OK\n{files: [...]}",
+      "mode": "response",
+      "phase": "execution",
+      "description": "Resource server returns PR files",
+      "sequence": 10
+    },
+    {
+      "from": "specialist",
+      "to": "specialist",
+      "action": "analyze",
+      "label": "Security Analysis",
+      "mode": "interactive",
+      "phase": "execution",
+      "description": "Specialist performs security analysis",
+      "sequence": 11
+    },
+    {
+      "from": "specialist",
+      "to": "orchestrator",
+      "action": "task_result",
+      "label": "200 OK\n{findings: [...], risk_level: medium}",
+      "mode": "response",
+      "phase": "completion",
+      "description": "Specialist returns analysis results to orchestrator",
+      "sequence": 12
+    },
+    {
+      "from": "orchestrator",
+      "to": "user",
+      "action": "final_report",
+      "label": "Security Review Complete\n2 vulnerabilities found",
+      "mode": "response",
+      "phase": "completion",
+      "description": "Orchestrator synthesizes and presents results to user",
+      "sequence": 13
+    }
+  ],
+  "metadata": {
+    "tokens": [
+      {
+        "id": "orchestrator_token",
+        "name": "Orchestrator Token",
+        "type": "jwt",
+        "issuer": "auth_server",
+        "binding": "bearer"
+      },
+      {
+        "id": "delegation_token",
+        "name": "Delegation Token",
+        "type": "jwt",
+        "issuer": "auth_server",
+        "audience": "resource_server",
+        "binding": "bearer"
+      }
+    ]
+  }
+}

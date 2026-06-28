@@ -1,0 +1,41 @@
+sequenceDiagram
+    title AIMS/SPIFFE Workload Identity Authentication
+    autonumber
+
+    participant agent as OAIAF Agent
+    participant spire_agent as SPIRE Agent
+    participant auth_server as Authorization Server
+    participant resource_server as Resource Server
+
+    rect rgb(240, 240, 240)
+    note right of agent: SVID Acquisition
+    agent->>spire_agent: FetchX509SVID()
+via Workload API socket
+    spire_agent->>spire_agent: Workload Attestation
+(PID, namespace, container)
+    spire_agent-->>agent: X.509 SVID + Trust Bundle
+SPIFFE ID&&#35;58; spiffe&&#35;58;//example.com/agent/x
+    end
+
+    rect rgb(240, 240, 240)
+    note right of agent: Token Exchange
+    agent->>auth_server: POST /token (mTLS)
+grant_type=token-exchange
+subject_token_type=svid
+    auth_server->>auth_server: Validate SVID
+- Verify certificate chain
+- Check SPIFFE ID format
+- Match registration
+    auth_server-->>agent: 200 OK
+{access_token, token_type, scope}
+    end
+
+    rect rgb(240, 240, 240)
+    note right of agent: Resource Access
+    agent->>resource_server: GET /api/resource (mTLS)
+Authorization&&#35;58; Bearer {token}
+    resource_server->>resource_server: Validate mTLS + Token
+Match SPIFFE IDs
+    resource_server-->>agent: 200 OK
+{resource data}
+    end

@@ -1,0 +1,32 @@
+@startuml
+title ID-JAG Token Exchange Flow
+
+participant "OAIAF Agent" as agent
+participant "Authorization Server" as auth_server
+participant "Resource Server" as resource_server
+
+
+== Assertion Creation ==
+agent -> agent: Create JWT Assertion
+
+== Token Exchange ==
+agent -> auth_server: POST /token
+grant_type=token-exchange
+subject_token={jwt}
+auth_server -> auth_server: Validate JWT Signature
+Check Agent Registration
+Evaluate Policies
+auth_server --> agent: 200 OK
+{access_token, token_type, expires_in}
+auth_server --> agent: 400 Bad Request
+{error: invalid_grant}
+agent -> agent: Cache Token
+
+== Resource Access ==
+agent -> resource_server: GET /api/resource
+Authorization: Bearer {token}
+resource_server -> resource_server: Validate Token
+resource_server --> agent: 200 OK
+{resource data}
+
+@enduml

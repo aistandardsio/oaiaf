@@ -1,0 +1,61 @@
+sequenceDiagram
+    title OAIAF Five-Layer Agent Identity Stack
+    autonumber
+
+    participant admin as Enterprise Admin
+    participant scim_server as SCIM Server
+    participant user as Delegating User
+    participant agent as OAIAF Agent
+    participant spire as SPIRE
+    participant auth_server as Authorization Server
+    participant pdp as Policy Decision Point
+    participant resource_server as Resource Server
+
+    rect rgb(240, 240, 240)
+    note right of admin: Layer 1: Lifecycle Management
+    admin->>scim_server: POST /Agents
+{displayName, capabilities, owner}
+    scim_server-->>admin: 201 Created
+{id, spiffeID, status&&#35;58; active}
+    end
+
+    rect rgb(240, 240, 240)
+    note right of admin: Layer 2: Workload Identity
+    agent->>spire: FetchX509SVID()
+    spire-->>agent: X.509 SVID
+spiffe&&#35;58;//example.com/agent/{id}
+    end
+
+    rect rgb(240, 240, 240)
+    note right of admin: Layer 4: Human Delegation
+    user->>auth_server: OIDC Login
+    auth_server-->>user: ID Token + Session
+    end
+
+    rect rgb(240, 240, 240)
+    note right of admin: Layer 3: Agent Authentication
+    agent->>auth_server: POST /token (mTLS)
+ID-JAG assertion
+delegator={user_id}
+    auth_server->>auth_server: Validate&&#35;58;
+- SVID (workload)
+- Assertion (agent)
+- Delegation (user)
+    auth_server-->>agent: Access Token
+{sub&&#35;58; agent, act&&#35;58; {sub&&#35;58; user}, scope}
+    end
+
+    rect rgb(240, 240, 240)
+    note right of admin: Layer 5: Authorization
+    agent->>resource_server: POST /api/sensitive-action
+Authorization&&#35;58; Bearer {token}
+    resource_server->>pdp: POST /access/v1/evaluation
+{subject&&#35;58; {agent, user}, action, resource}
+    pdp->>pdp: Evaluate Cedar/OpenFGA Policy
+- Agent capabilities
+- User permissions
+- Resource constraints
+    pdp-->>resource_server: {decision&&#35;58; PERMIT}
+    resource_server-->>agent: 200 OK
+{result}
+    end

@@ -1,0 +1,2223 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Reference architecture for enterprise AI agent identity and authorization">
+      
+      
+      
+        <link rel="canonical" href="https://aistandards.io/oaiaf/flows/">
+      
+      
+        <link rel="prev" href="../architecture/">
+      
+      
+        <link rel="next" href="../layers/lifecycle/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Protocol Flows - OAIAF - OpenAI Agent Framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="https://aistandards.io/css/aistandardsio-mkdocs.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#oaiaf-protocol-flows" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="OAIAF - OpenAI Agent Framework" class="md-header__button md-logo" aria-label="OAIAF - OpenAI Agent Framework" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OAIAF - OpenAI Agent Framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Protocol Flows
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aistandardsio/oaiaf" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aistandardsio/oaiaf
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="OAIAF - OpenAI Agent Framework" class="md-nav__button md-logo" aria-label="OAIAF - OpenAI Agent Framework" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OAIAF - OpenAI Agent Framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aistandardsio/oaiaf" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aistandardsio/oaiaf
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol Flows
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol Flows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#id-jag-token-exchange" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ID-JAG Token Exchange
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aauth-consent-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AAuth Consent Flow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aimsspiffe-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AIMS/SPIFFE Authentication
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#agent-identity-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent Identity Stack
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a2a-agent-delegation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A2A Agent Delegation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mcp-with-oaiaf-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MCP with OAIAF Authorization
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pidl-source-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PIDL Source Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Identity Stack
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Identity Stack
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../layers/lifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Layer 1 - Lifecycle (SCIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../layers/workload-identity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Layer 2 - Workload Identity (SPIFFE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../layers/agent-auth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Layer 3 - Agent Auth (AAuth)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../layers/human-delegation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Layer 4 - Human Delegation (ID-JAG)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../layers/authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Layer 5 - Authorization (AuthZEN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interoperability
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Interoperability
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../interop/a2a/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A2A Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../interop/mcp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MCP Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent Types
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Agent Types
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../agents/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../agents/coding-assistants/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coding Assistants
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../agents/hosted-platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hosted Platforms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../agents/multi-agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Agent Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../agents/enterprise/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Frameworks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Observability
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observability/opentelemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenTelemetry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observability/agentops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AgentOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Runtime
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runtime/kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runtime/spire/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPIRE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runtime/service-mesh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Service Mesh
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Specifications
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Specifications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../specs/ROADMAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Related Projects
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Related Projects
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://aistandards.io/agent-protocols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    agent-protocols
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/plexusone/agentauth" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    agentauth
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#id-jag-token-exchange" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ID-JAG Token Exchange
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aauth-consent-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AAuth Consent Flow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aimsspiffe-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AIMS/SPIFFE Authentication
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#agent-identity-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent Identity Stack
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a2a-agent-delegation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A2A Agent Delegation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mcp-with-oaiaf-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MCP with OAIAF Authorization
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pidl-source-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PIDL Source Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="oaiaf-protocol-flows">OAIAF Protocol Flows<a class="headerlink" href="#oaiaf-protocol-flows" title="Permanent link">&para;</a></h1>
+<p>This document provides detailed sequence diagrams for the authorization protocols supported by OAIAF. Each flow is defined using <a href="https://github.com/grokify/pidl">PIDL</a> (Protocol Interaction Description Language) and rendered as Mermaid sequence diagrams.</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>OAIAF supports three core authorization protocols:</p>
+<table>
+<thead>
+<tr>
+<th>Protocol</th>
+<th>Use Case</th>
+<th>Human Interaction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#id-jag-token-exchange">ID-JAG</a></td>
+<td>Automated, policy-based authorization</td>
+<td>None</td>
+</tr>
+<tr>
+<td><a href="#aauth-consent-flow">AAuth</a></td>
+<td>Sensitive operations requiring approval</td>
+<td>Consent flow</td>
+</tr>
+<tr>
+<td><a href="#aimsspiffe-authentication">AIMS/SPIFFE</a></td>
+<td>Workload identity binding</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p>These protocols can be combined to implement the <a href="#agent-identity-stack">Five-Layer Agent Identity Stack</a>.</p>
+<h2 id="id-jag-token-exchange">ID-JAG Token Exchange<a class="headerlink" href="#id-jag-token-exchange" title="Permanent link">&para;</a></h2>
+<p>ID-JAG (Identity Assertion Authorization Grant) enables agents to exchange signed JWT assertions for access tokens without human interaction. This is ideal for automated pipelines and trusted operations.</p>
+<p><strong>Key Characteristics:</strong></p>
+<ul>
+<li>Agent signs JWT assertion with its private key</li>
+<li>Authorization server validates signature and agent registration</li>
+<li>No human consent required (policy-based)</li>
+<li>Tokens cached by scope for efficiency</li>
+</ul>
+<p><strong>OAIAF Implementation:</strong> <code>IDJAGProvider</code></p>
+<pre class="mermaid"><code>sequenceDiagram
+    title ID-JAG Token Exchange Flow
+    autonumber
+
+    participant agent as OAIAF Agent
+    participant auth_server as Authorization Server
+    participant resource_server as Resource Server
+
+    rect rgb(240, 240, 240)
+    note right of agent: Assertion Creation
+    agent-&gt;&gt;agent: Create JWT Assertion
+    end
+
+    rect rgb(240, 240, 240)
+    note right of agent: Token Exchange
+    agent-&gt;&gt;auth_server: POST /token&lt;br/&gt;grant_type=token-exchange&lt;br/&gt;subject_token={jwt}
+    auth_server-&gt;&gt;auth_server: Validate JWT Signature&lt;br/&gt;Check Agent Registration&lt;br/&gt;Evaluate Policies
+    alt assertion_valid
+        auth_server--&gt;&gt;agent: 200 OK&lt;br/&gt;{access_token, token_type, expires_in}
+    else assertion_invalid
+        auth_server--&gt;&gt;agent: 400 Bad Request&lt;br/&gt;{error: invalid_grant}
+    end
+    agent-&gt;&gt;agent: Cache Token
+    end
+
+    rect rgb(240, 240, 240)
+    note right of agent: Resource Access
+    agent-&gt;&gt;resource_server: GET /api/resource&lt;br/&gt;Authorization: Bearer {token}
+    resource_server-&gt;&gt;resource_server: Validate Token
+    resource_server--&gt;&gt;agent: 200 OK&lt;br/&gt;{resource data}
+    end</code></pre>
+<p><strong>Go Example:</strong></p>
+<div class="language-go highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nx">agent</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">oaiaf</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="s">&quot;my-agent&quot;</span><span class="p">,</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="nx">oaiaf</span><span class="p">.</span><span class="nx">WithAuthServer</span><span class="p">(</span><span class="s">&quot;https://auth.example.com&quot;</span><span class="p">),</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nx">oaiaf</span><span class="p">.</span><span class="nx">WithCredentials</span><span class="p">(</span><span class="nx">privateKey</span><span class="p">,</span><span class="w"> </span><span class="nx">keyID</span><span class="p">),</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="nx">oaiaf</span><span class="p">.</span><span class="nx">WithProtocol</span><span class="p">(</span><span class="nx">oaiaf</span><span class="p">.</span><span class="nx">ProtocolIDJAG</span><span class="p">),</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="p">)</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="nx">resp</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">agent</span><span class="p">.</span><span class="nx">AuthorizedRequest</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;read:email&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">req</span><span class="p">)</span>
+</span></code></pre></div>
+<h2 id="aauth-consent-flow">AAuth Consent Flow<a class="headerlink" href="#aauth-consent-flow" title="Permanent link">&para;</a></h2>
+<p>AAuth (Agent Authorization) provides human-in-the-loop consent for sensitive operations. The agent requests authorization, and a human must approve before access is granted.</p>
+<p><strong>Key Characteristics:</strong></p>
+<ul>
+<li>Consent required for sensitive scopes</li>
+<li>Polling-based status updates</li>
+<li>Mission-scoped tokens</li>
+<li>Full audit trail</li>
+</ul>
+<p><strong>OAIAF Implementation:</strong> <code>AAuthProvider</code></p>
+<pre class="mermaid"><code>sequenceDiagram
+    title AAuth Human-in-the-Loop Consent Flow
+    autonumber
+
+    participant agent as OAIAF Agent
+    participant user as Human User
+    participant auth_server as Authorization Server
+    participant resource_server as Resource Server
+
+    rect rgb(240, 240, 240)
+    note right of agent: Authorization Request
+    agent-&gt;&gt;auth_server: POST /authorize&lt;br/&gt;{agent_token, scope, user_id}
+    auth_server-&gt;&gt;auth_server: Check Auto-Approval Policy
+    auth_server--&gt;&gt;agent: 202 Accepted&lt;br/&gt;{consent_uri, status_uri, mission_id}
+    end
+
+    rect rgb(240, 240, 240)
+    note right of agent: Consent Flow
+    agent-&gt;&gt;user: Display Consent URI&lt;br/&gt;(browser, notification, etc.)
+    user-&gt;&gt;auth_server: GET {consent_uri}&lt;br/&gt;Review Request Details
+    auth_server--&gt;&gt;user: Consent Page&lt;br/&gt;(scope, agent info, mission details)
+    alt user_approves
+        user-&gt;&gt;auth_server: POST /consent&lt;br/&gt;{approved: true}
+    else user_denies
+        user-&gt;&gt;auth_server: POST /consent&lt;br/&gt;{approved: false}
+    end
+    end
+
+    rect rgb(240, 240, 240)
+    note right of agent: Token Issuance
+    loop Poll until resolved
+        agent-&gt;&gt;auth_server: GET {status_uri}
+        alt pending
+            auth_server--&gt;&gt;agent: 200 OK&lt;br/&gt;{status: pending}
+        else approved
+            auth_server--&gt;&gt;agent: 200 OK&lt;br/&gt;{status: approved, access_token}
+        else denied
+            auth_server--&gt;&gt;agent: 200 OK&lt;br/&gt;{status: denied, error}
+        end
+    end
+    end
+
+    rect rgb(240, 240, 240)
+    note right of agent: Resource Access
+    agent-&gt;&gt;resource_server: POST /api/action&lt;br/&gt;Authorization: Bearer {token}
+    resource_server--&gt;&gt;agent: 200 OK&lt;br/&gt;{result}
+    end</code></pre>
+<p><strong>Go Example:</strong></p>
+<div class="language-go highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nx">provider</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">oaiaf</span><span class="p">.</span><span class="nx">NewAAuthProvider</span><span class="p">(</span><span class="nx">agent</span><span class="p">)</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nx">provider</span><span class="p">.</span><span class="nx">ConsentHandler</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">consentURI</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">bool</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;Approve at: %s\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">consentURI</span><span class="p">)</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">waitForUserApproval</span><span class="p">()</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="p">}</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nx">provider</span><span class="p">.</span><span class="nx">Timeout</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Minute</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="nx">agent</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">oaiaf</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="s">&quot;my-agent&quot;</span><span class="p">,</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="nx">oaiaf</span><span class="p">.</span><span class="nx">WithAuthServer</span><span class="p">(</span><span class="s">&quot;https://auth.example.com&quot;</span><span class="p">),</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="nx">oaiaf</span><span class="p">.</span><span class="nx">WithProvider</span><span class="p">(</span><span class="nx">provider</span><span class="p">),</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="p">)</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="nx">resp</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">agent</span><span class="p">.</span><span class="nx">AuthorizedRequest</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;mission:deploy:staging&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">req</span><span class="p">)</span>
+</span></code></pre></div>
+<h2 id="aimsspiffe-authentication">AIMS/SPIFFE Authentication<a class="headerlink" href="#aimsspiffe-authentication" title="Permanent link">&para;</a></h2>
+<p>AIMS (Agent Identity and Messaging System) uses SPIFFE workload identity to bind agents to their infrastructure. X.509 SVIDs provide cryptographic proof of workload identity.</p>
+<p><strong>Key Characteristics:</strong></p>
+<ul>
+<li>Zero-trust workload identity</li>
+<li>Short-lived, auto-rotated certificates</li>
+<li>mTLS for transport security</li>
+<li>Defense in depth (mTLS + bearer token)</li>
+</ul>
+<p><strong>OAIAF Implementation:</strong> <code>AIMSProvider</code></p>
+<pre class="mermaid"><code>sequenceDiagram
+    title AIMS/SPIFFE Workload Identity Authentication
+    autonumber
+
+    participant agent as OAIAF Agent
+    participant spire_agent as SPIRE Agent
+    participant auth_server as Authorization Server
+    participant resource_server as Resource Server
+
+    rect rgb(240, 240, 240)
+    note right of agent: SVID Acquisition
+    agent-&gt;&gt;spire_agent: FetchX509SVID()&lt;br/&gt;via Workload API socket
+    spire_agent-&gt;&gt;spire_agent: Workload Attestation&lt;br/&gt;(PID, namespace, container)
+    spire_agent--&gt;&gt;agent: X.509 SVID + Trust Bundle&lt;br/&gt;SPIFFE ID: spiffe://example.com/agent/x
+    end
+
+    rect rgb(240, 240, 240)
+    note right of agent: Token Exchange
+    agent-&gt;&gt;auth_server: POST /token (mTLS)&lt;br/&gt;grant_type=token-exchange&lt;br/&gt;subject_token_type=svid
+    auth_server-&gt;&gt;auth_server: Validate SVID&lt;br/&gt;- Verify certificate chain&lt;br/&gt;- Check SPIFFE ID format&lt;br/&gt;- Match registration
+    alt svid_valid
+        auth_server--&gt;&gt;agent: 200 OK&lt;br/&gt;{access_token, token_type, scope}
+    end
+    end
+
+    rect rgb(240, 240, 240)
+    note right of agent: Resource Access
+    agent-&gt;&gt;resource_server: GET /api/resource (mTLS)&lt;br/&gt;Authorization: Bearer {token}
+    resource_server-&gt;&gt;resource_server: Validate mTLS + Token&lt;br/&gt;Match SPIFFE IDs
+    resource_server--&gt;&gt;agent: 200 OK&lt;br/&gt;{resource data}
+    end</code></pre>
+<p><strong>Go Example:</strong></p>
+<div class="language-go highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nx">provider</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">oaiaf</span><span class="p">.</span><span class="nx">NewAIMSProvider</span><span class="p">(</span><span class="nx">agent</span><span class="p">,</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="nx">oaiaf</span><span class="p">.</span><span class="nx">WithSPIFFEID</span><span class="p">(</span><span class="s">&quot;spiffe://example.com/agent/my-agent&quot;</span><span class="p">),</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nx">oaiaf</span><span class="p">.</span><span class="nx">WithTrustBundle</span><span class="p">(</span><span class="nx">trustBundle</span><span class="p">),</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nx">oaiaf</span><span class="p">.</span><span class="nx">WithSVID</span><span class="p">(</span><span class="nx">certificate</span><span class="p">),</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="p">)</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="c1">// Or fetch from SPIRE Workload API</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="nx">provider</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">oaiaf</span><span class="p">.</span><span class="nx">NewAIMSProvider</span><span class="p">(</span><span class="nx">agent</span><span class="p">,</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="nx">oaiaf</span><span class="p">.</span><span class="nx">WithWorkloadSocket</span><span class="p">(</span><span class="s">&quot;/var/run/spiffe/agent.sock&quot;</span><span class="p">),</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="p">)</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="nx">agent</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">oaiaf</span><span class="p">.</span><span class="nx">NewAgent</span><span class="p">(</span><span class="s">&quot;my-agent&quot;</span><span class="p">,</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">    </span><span class="nx">oaiaf</span><span class="p">.</span><span class="nx">WithAuthServer</span><span class="p">(</span><span class="s">&quot;https://auth.example.com&quot;</span><span class="p">),</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">    </span><span class="nx">oaiaf</span><span class="p">.</span><span class="nx">WithProvider</span><span class="p">(</span><span class="nx">provider</span><span class="p">),</span>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="p">)</span>
+</span></code></pre></div>
+<h2 id="agent-identity-stack">Agent Identity Stack<a class="headerlink" href="#agent-identity-stack" title="Permanent link">&para;</a></h2>
+<p>The complete five-layer identity stack combines all protocols for enterprise-grade agent authorization:</p>
+<ol>
+<li><strong>Lifecycle (SCIM)</strong> - Agent provisioning and management</li>
+<li><strong>Workload Identity (SPIFFE)</strong> - Infrastructure binding</li>
+<li><strong>Agent Authentication (AAuth)</strong> - Agent identity token</li>
+<li><strong>Human Delegation (ID-JAG)</strong> - Authority chain</li>
+<li><strong>Authorization (AuthZEN)</strong> - Fine-grained access control</li>
+</ol>
+<pre class="mermaid"><code>sequenceDiagram
+    title OAIAF Five-Layer Agent Identity Stack
+    autonumber
+
+    participant admin as Enterprise Admin
+    participant scim_server as SCIM Server
+    participant user as Delegating User
+    participant agent as OAIAF Agent
+    participant spire as SPIRE
+    participant auth_server as Authorization Server
+    participant pdp as Policy Decision Point
+    participant resource_server as Resource Server
+
+    rect rgb(230, 245, 255)
+    note right of admin: Layer 1: Lifecycle Management
+    admin-&gt;&gt;scim_server: POST /Agents&lt;br/&gt;{displayName, capabilities, owner}
+    scim_server--&gt;&gt;admin: 201 Created&lt;br/&gt;{id, spiffeID, status: active}
+    end
+
+    rect rgb(230, 255, 230)
+    note right of agent: Layer 2: Workload Identity
+    agent-&gt;&gt;spire: FetchX509SVID()
+    spire--&gt;&gt;agent: X.509 SVID&lt;br/&gt;spiffe://example.com/agent/{id}
+    end
+
+    rect rgb(255, 245, 230)
+    note right of user: Layer 4: Human Delegation
+    user-&gt;&gt;auth_server: OIDC Login
+    auth_server--&gt;&gt;user: ID Token + Session
+    end
+
+    rect rgb(255, 230, 230)
+    note right of agent: Layer 3: Agent Authentication
+    agent-&gt;&gt;auth_server: POST /token (mTLS)&lt;br/&gt;ID-JAG assertion&lt;br/&gt;delegator={user_id}
+    auth_server-&gt;&gt;auth_server: Validate:&lt;br/&gt;- SVID (workload)&lt;br/&gt;- Assertion (agent)&lt;br/&gt;- Delegation (user)
+    auth_server--&gt;&gt;agent: Access Token&lt;br/&gt;{sub: agent, act: {sub: user}, scope}
+    end
+
+    rect rgb(240, 230, 255)
+    note right of agent: Layer 5: Authorization
+    agent-&gt;&gt;resource_server: POST /api/sensitive-action&lt;br/&gt;Authorization: Bearer {token}
+    resource_server-&gt;&gt;pdp: POST /access/v1/evaluation&lt;br/&gt;{subject: {agent, user}, action, resource}
+    pdp-&gt;&gt;pdp: Evaluate Cedar/OpenFGA Policy&lt;br/&gt;- Agent capabilities&lt;br/&gt;- User permissions&lt;br/&gt;- Resource constraints
+    alt allowed
+        pdp--&gt;&gt;resource_server: {decision: PERMIT}
+    end
+    resource_server--&gt;&gt;agent: 200 OK&lt;br/&gt;{result}
+    end</code></pre>
+<h2 id="a2a-agent-delegation">A2A Agent Delegation<a class="headerlink" href="#a2a-agent-delegation" title="Permanent link">&para;</a></h2>
+<p>A2A (Agent-to-Agent) protocol enables agents to discover and delegate tasks to other agents while maintaining accountability.</p>
+<pre class="mermaid"><code>sequenceDiagram
+    title A2A Agent-to-Agent Delegation
+    autonumber
+
+    participant user as Human User
+    participant orchestrator as Orchestrator Agent
+    participant specialist as Specialist Agent
+    participant auth_server as Authorization Server
+    participant resource_server as Resource Server
+
+    rect rgb(240, 240, 240)
+    note right of user: Agent Discovery
+    user-&gt;&gt;orchestrator: Review PR #123 for security issues
+    orchestrator-&gt;&gt;specialist: GET /.well-known/agent.json
+    specialist--&gt;&gt;orchestrator: Agent Card&lt;br/&gt;{capabilities: [security-scan],&lt;br/&gt;endpoints, auth}
+    end
+
+    rect rgb(240, 240, 240)
+    note right of orchestrator: Task Delegation
+    orchestrator-&gt;&gt;auth_server: POST /token&lt;br/&gt;grant_type=delegation&lt;br/&gt;delegate_to={specialist_id}&lt;br/&gt;scope=security-scan:pr-123
+    auth_server-&gt;&gt;auth_server: Validate:&lt;br/&gt;- Orchestrator can delegate&lt;br/&gt;- Scope is subset&lt;br/&gt;- Specialist registered
+    auth_server--&gt;&gt;orchestrator: Delegation Token&lt;br/&gt;{sub: specialist, act: [{orchestrator}, {user}]}
+    end
+
+    rect rgb(240, 240, 240)
+    note right of specialist: Task Execution
+    orchestrator-&gt;&gt;specialist: POST /invoke&lt;br/&gt;{task: security-scan, target: pr-123}&lt;br/&gt;Authorization: Bearer {delegation_token}
+    specialist-&gt;&gt;resource_server: GET /repos/acme/backend/pulls/123/files&lt;br/&gt;Authorization: Bearer {delegation_token}
+    resource_server-&gt;&gt;resource_server: Validate delegation chain&lt;br/&gt;Log: user -&gt; orchestrator -&gt; specialist
+    resource_server--&gt;&gt;specialist: 200 OK&lt;br/&gt;{files: [...]}
+    specialist-&gt;&gt;specialist: Security Analysis
+    end
+
+    rect rgb(240, 240, 240)
+    note right of user: Task Completion
+    specialist--&gt;&gt;orchestrator: 200 OK&lt;br/&gt;{findings: [...], risk_level: medium}
+    orchestrator--&gt;&gt;user: Security Review Complete&lt;br/&gt;2 vulnerabilities found
+    end</code></pre>
+<h2 id="mcp-with-oaiaf-authorization">MCP with OAIAF Authorization<a class="headerlink" href="#mcp-with-oaiaf-authorization" title="Permanent link">&para;</a></h2>
+<p>MCP (Model Context Protocol) tool invocation integrated with OAIAF authorization.</p>
+<pre class="mermaid"><code>sequenceDiagram
+    title MCP Tool Invocation with OAIAF Authorization
+    autonumber
+
+    participant agent as OAIAF Agent
+    participant mcp_server as MCP Server
+    participant auth_server as Authorization Server
+    participant external_api as External API
+
+    rect rgb(240, 240, 240)
+    note right of agent: MCP Initialization
+    agent-&gt;&gt;mcp_server: initialize&lt;br/&gt;{protocolVersion, capabilities}
+    mcp_server--&gt;&gt;agent: initialize response&lt;br/&gt;{serverInfo, capabilities}
+    agent-&gt;&gt;mcp_server: tools/list
+    mcp_server--&gt;&gt;agent: tools/list response&lt;br/&gt;[{name: search_code, inputSchema, auth_required: true}]
+    end
+
+    rect rgb(240, 240, 240)
+    note right of agent: Tool Authentication
+    agent-&gt;&gt;auth_server: POST /token&lt;br/&gt;grant_type=client_credentials&lt;br/&gt;scope=mcp:search_code
+    auth_server--&gt;&gt;agent: 200 OK&lt;br/&gt;{access_token, scope: mcp:search_code}
+    end
+
+    rect rgb(240, 240, 240)
+    note right of agent: Tool Invocation
+    agent-&gt;&gt;mcp_server: tools/call&lt;br/&gt;{name: search_code, arguments: {query: "sql injection"}}&lt;br/&gt;Authorization: Bearer {token}
+    mcp_server-&gt;&gt;mcp_server: Validate Token&lt;br/&gt;Check scope: mcp:search_code
+    end
+
+    rect rgb(240, 240, 240)
+    note right of mcp_server: Tool Execution
+    mcp_server-&gt;&gt;external_api: GET /api/search&lt;br/&gt;?q=sql+injection
+    external_api--&gt;&gt;mcp_server: 200 OK&lt;br/&gt;{results: [...]}
+    mcp_server--&gt;&gt;agent: tools/call response&lt;br/&gt;{content: [{type: text, text: "Found 3 matches..."}]}
+    end</code></pre>
+<h2 id="pidl-source-files">PIDL Source Files<a class="headerlink" href="#pidl-source-files" title="Permanent link">&para;</a></h2>
+<p>The diagrams in this document are generated from PIDL source files located in <code>docs/diagrams/pidl/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Protocol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../diagrams/pidl/idjag_token_exchange.pidl.json"><code>idjag_token_exchange.pidl.json</code></a></td>
+<td>ID-JAG Token Exchange</td>
+</tr>
+<tr>
+<td><a href="../diagrams/pidl/aauth_consent_flow.pidl.json"><code>aauth_consent_flow.pidl.json</code></a></td>
+<td>AAuth Consent Flow</td>
+</tr>
+<tr>
+<td><a href="../diagrams/pidl/aims_spiffe_auth.pidl.json"><code>aims_spiffe_auth.pidl.json</code></a></td>
+<td>AIMS/SPIFFE Authentication</td>
+</tr>
+<tr>
+<td><a href="../diagrams/pidl/agent_identity_stack.pidl.json"><code>agent_identity_stack.pidl.json</code></a></td>
+<td>Five-Layer Identity Stack</td>
+</tr>
+<tr>
+<td><a href="../diagrams/pidl/a2a_delegation.pidl.json"><code>a2a_delegation.pidl.json</code></a></td>
+<td>A2A Agent Delegation</td>
+</tr>
+<tr>
+<td><a href="../diagrams/pidl/mcp_with_auth.pidl.json"><code>mcp_with_auth.pidl.json</code></a></td>
+<td>MCP with OAIAF Auth</td>
+</tr>
+</tbody>
+</table>
+<p>To regenerate diagrams:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Install PIDL</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>go<span class="w"> </span>install<span class="w"> </span>github.com/grokify/pidl/cmd/pidl@latest
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Generate Mermaid</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>pidl<span class="w"> </span>generate<span class="w"> </span>-f<span class="w"> </span>mermaid<span class="w"> </span>docs/diagrams/pidl/idjag_token_exchange.pidl.json
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># Generate PlantUML</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>pidl<span class="w"> </span>generate<span class="w"> </span>-f<span class="w"> </span>plantuml<span class="w"> </span>docs/diagrams/pidl/idjag_token_exchange.pidl.json
+</span></code></pre></div>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://datatracker.ietf.org/doc/draft-ietf-oauth-identity-assertion-authz-grant/">ID-JAG Specification</a></li>
+<li><a href="https://datatracker.ietf.org/doc/draft-hardt-oauth-aauth-protocol/">AAuth Protocol</a></li>
+<li><a href="https://spiffe.io/">SPIFFE</a></li>
+<li><a href="https://github.com/a2a-protocol/a2a">A2A Protocol</a></li>
+<li><a href="https://spec.modelcontextprotocol.io/">Model Context Protocol</a></li>
+<li><a href="https://openid.net/specs/openid-authzen-authorization-api-1_0.html">AuthZEN</a></li>
+<li><a href="https://github.com/grokify/pidl">PIDL</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/aistandardsio/oaiaf" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "search.highlight", "search.suggest", "content.code.copy", "content.code.annotate", "content.tabs.link", "toc.follow"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

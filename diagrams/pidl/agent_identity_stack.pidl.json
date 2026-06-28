@@ -1,0 +1,313 @@
+{
+  "protocol": {
+    "id": "agent-identity-stack",
+    "name": "OAIAF Five-Layer Agent Identity Stack",
+    "version": "1.0",
+    "description": "Complete flow through the five-layer agent identity stack: Lifecycle (SCIM), Workload Identity (SPIFFE), Agent Authentication (AAuth), Human Delegation (ID-JAG), and Authorization (AuthZEN).",
+    "category": "auth",
+    "references": [
+      {
+        "name": "SCIM Agent Resource",
+        "url": "https://datatracker.ietf.org/doc/draft-wzdk-scim-agent-resource/"
+      },
+      {
+        "name": "SPIFFE",
+        "url": "https://spiffe.io/"
+      },
+      {
+        "name": "AAuth Protocol",
+        "url": "https://datatracker.ietf.org/doc/draft-hardt-oauth-aauth-protocol/"
+      },
+      {
+        "name": "ID-JAG",
+        "url": "https://datatracker.ietf.org/doc/draft-ietf-oauth-identity-assertion-authz-grant/"
+      },
+      {
+        "name": "AuthZEN",
+        "url": "https://openid.net/specs/openid-authzen-authorization-api-1_0.html"
+      }
+    ]
+  },
+  "entities": [
+    {
+      "id": "admin",
+      "name": "Enterprise Admin",
+      "type": "user",
+      "description": "Administrator who provisions and manages agents",
+      "trust_level": "trusted"
+    },
+    {
+      "id": "scim_server",
+      "name": "SCIM Server",
+      "type": "server",
+      "description": "Identity management system with SCIM Agent Resource extension",
+      "trust_level": "authoritative"
+    },
+    {
+      "id": "user",
+      "name": "Delegating User",
+      "type": "user",
+      "description": "Human user who delegates authority to agent",
+      "trust_level": "trusted"
+    },
+    {
+      "id": "agent",
+      "name": "OAIAF Agent",
+      "type": "agent",
+      "description": "AI agent with full identity stack integration",
+      "trust_level": "semi_trusted"
+    },
+    {
+      "id": "spire",
+      "name": "SPIRE",
+      "type": "server",
+      "description": "SPIFFE Runtime Environment providing workload identity",
+      "trust_level": "trusted"
+    },
+    {
+      "id": "auth_server",
+      "name": "Authorization Server",
+      "type": "authorization_server",
+      "description": "OAuth/AAuth server handling authentication and delegation",
+      "trust_level": "authoritative"
+    },
+    {
+      "id": "pdp",
+      "name": "Policy Decision Point",
+      "type": "server",
+      "description": "AuthZEN-compatible PDP (Cedar, OpenFGA, etc.)",
+      "trust_level": "authoritative"
+    },
+    {
+      "id": "resource_server",
+      "name": "Resource Server",
+      "type": "resource_server",
+      "description": "Protected enterprise resource",
+      "trust_level": "trusted"
+    }
+  ],
+  "phases": [
+    {
+      "id": "lifecycle",
+      "name": "Layer 1: Lifecycle Management",
+      "description": "Agent provisioning via SCIM"
+    },
+    {
+      "id": "workload_identity",
+      "name": "Layer 2: Workload Identity",
+      "description": "SPIFFE identity binding"
+    },
+    {
+      "id": "agent_auth",
+      "name": "Layer 3: Agent Authentication",
+      "description": "AAuth token acquisition"
+    },
+    {
+      "id": "human_delegation",
+      "name": "Layer 4: Human Delegation",
+      "description": "ID-JAG delegation chain"
+    },
+    {
+      "id": "authorization",
+      "name": "Layer 5: Authorization",
+      "description": "AuthZEN policy evaluation"
+    }
+  ],
+  "flows": [
+    {
+      "from": "admin",
+      "to": "scim_server",
+      "action": "provision_agent",
+      "label": "POST /Agents\n{displayName, capabilities, owner}",
+      "mode": "request",
+      "phase": "lifecycle",
+      "description": "Admin provisions agent in enterprise identity system",
+      "sequence": 1
+    },
+    {
+      "from": "scim_server",
+      "to": "admin",
+      "action": "agent_created",
+      "label": "201 Created\n{id, spiffeID, status: active}",
+      "mode": "response",
+      "phase": "lifecycle",
+      "description": "SCIM server returns agent record with assigned identifiers",
+      "sequence": 2
+    },
+    {
+      "from": "agent",
+      "to": "spire",
+      "action": "fetch_svid",
+      "label": "FetchX509SVID()",
+      "mode": "request",
+      "phase": "workload_identity",
+      "description": "Agent requests workload identity from SPIRE",
+      "sequence": 3
+    },
+    {
+      "from": "spire",
+      "to": "agent",
+      "action": "svid_issued",
+      "label": "X.509 SVID\nspiffe://example.com/agent/{id}",
+      "mode": "response",
+      "phase": "workload_identity",
+      "description": "SPIRE issues SVID binding agent to infrastructure",
+      "sequence": 4,
+      "security": {
+        "requires": ["encryption"],
+        "description": "Short-lived certificate with SPIFFE ID"
+      }
+    },
+    {
+      "from": "user",
+      "to": "auth_server",
+      "action": "authenticate",
+      "label": "OIDC Login",
+      "mode": "request",
+      "phase": "human_delegation",
+      "description": "User authenticates to establish delegation authority",
+      "sequence": 5
+    },
+    {
+      "from": "auth_server",
+      "to": "user",
+      "action": "id_token",
+      "label": "ID Token + Session",
+      "mode": "response",
+      "phase": "human_delegation",
+      "description": "Auth server establishes user session",
+      "sequence": 6
+    },
+    {
+      "from": "agent",
+      "to": "auth_server",
+      "action": "idjag_request",
+      "label": "POST /token (mTLS)\nID-JAG assertion\ndelegator={user_id}",
+      "mode": "request",
+      "phase": "agent_auth",
+      "description": "Agent requests token with ID-JAG assertion referencing delegating user",
+      "sequence": 7,
+      "security": {
+        "requires": ["mtls", "signature"],
+        "description": "mTLS with SVID + signed JWT assertion"
+      }
+    },
+    {
+      "from": "auth_server",
+      "to": "auth_server",
+      "action": "validate_chain",
+      "label": "Validate:\n- SVID (workload)\n- Assertion (agent)\n- Delegation (user)",
+      "mode": "interactive",
+      "phase": "agent_auth",
+      "description": "Auth server validates complete identity chain",
+      "sequence": 8
+    },
+    {
+      "from": "auth_server",
+      "to": "agent",
+      "action": "composite_token",
+      "label": "Access Token\n{sub: agent, act: {sub: user}, scope}",
+      "mode": "response",
+      "phase": "agent_auth",
+      "description": "Token contains agent identity, acting-as user, and scope",
+      "sequence": 9,
+      "security": {
+        "token": "access_token",
+        "description": "Composite token with delegation chain"
+      }
+    },
+    {
+      "from": "agent",
+      "to": "resource_server",
+      "action": "api_request",
+      "label": "POST /api/sensitive-action\nAuthorization: Bearer {token}",
+      "mode": "request",
+      "phase": "authorization",
+      "description": "Agent attempts sensitive operation",
+      "sequence": 10
+    },
+    {
+      "from": "resource_server",
+      "to": "pdp",
+      "action": "authzen_request",
+      "label": "POST /access/v1/evaluation\n{subject: {agent, user}, action, resource}",
+      "mode": "request",
+      "phase": "authorization",
+      "description": "Resource server queries PDP with full context",
+      "sequence": 11,
+      "annotations": [
+        {
+          "type": "info",
+          "text": "AuthZEN request includes agent, user, workload context"
+        }
+      ]
+    },
+    {
+      "from": "pdp",
+      "to": "pdp",
+      "action": "evaluate_policy",
+      "label": "Evaluate Cedar/OpenFGA Policy\n- Agent capabilities\n- User permissions\n- Resource constraints",
+      "mode": "interactive",
+      "phase": "authorization",
+      "description": "PDP evaluates fine-grained authorization policy",
+      "sequence": 12
+    },
+    {
+      "from": "pdp",
+      "to": "resource_server",
+      "action": "authzen_response",
+      "label": "{decision: PERMIT}",
+      "mode": "response",
+      "phase": "authorization",
+      "description": "PDP returns authorization decision",
+      "sequence": 13,
+      "condition": "allowed"
+    },
+    {
+      "from": "resource_server",
+      "to": "agent",
+      "action": "api_response",
+      "label": "200 OK\n{result}",
+      "mode": "response",
+      "phase": "authorization",
+      "description": "Resource server performs action and returns result",
+      "sequence": 14
+    }
+  ],
+  "metadata": {
+    "tokens": [
+      {
+        "id": "svid",
+        "name": "X.509 SVID",
+        "type": "x509",
+        "issuer": "spire",
+        "binding": "mtls"
+      },
+      {
+        "id": "access_token",
+        "name": "Composite Access Token",
+        "type": "jwt",
+        "issuer": "auth_server",
+        "audience": "resource_server",
+        "binding": "bearer"
+      }
+    ],
+    "networks": {
+      "enterprise": {
+        "name": "Enterprise Network",
+        "style": "internal",
+        "entities": ["admin", "user", "scim_server"]
+      },
+      "workload": {
+        "name": "Workload Environment",
+        "style": "dmz",
+        "entities": ["agent", "spire"]
+      },
+      "infrastructure": {
+        "name": "Auth Infrastructure",
+        "style": "internal",
+        "entities": ["auth_server", "pdp", "resource_server"]
+      }
+    }
+  }
+}

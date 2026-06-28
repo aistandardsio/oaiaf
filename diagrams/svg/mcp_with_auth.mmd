@@ -1,0 +1,47 @@
+sequenceDiagram
+    title MCP Tool Invocation with OAIAF Authorization
+    autonumber
+
+    participant agent as OAIAF Agent
+    participant mcp_server as MCP Server
+    participant auth_server as Authorization Server
+    participant external_api as External API
+
+    rect rgb(240, 240, 240)
+    note right of agent: MCP Initialization
+    agent->>mcp_server: initialize
+{protocolVersion, capabilities}
+    mcp_server-->>agent: initialize response
+{serverInfo, capabilities}
+    agent->>mcp_server: tools/list
+    mcp_server-->>agent: tools/list response
+[{name&&#35;58; search_code, inputSchema, auth_required&&#35;58; true}]
+    end
+
+    rect rgb(240, 240, 240)
+    note right of agent: Tool Authentication
+    agent->>auth_server: POST /token
+grant_type=client_credentials
+scope=mcp&&#35;58;search_code
+    auth_server-->>agent: 200 OK
+{access_token, scope&&#35;58; mcp&&#35;58;search_code}
+    end
+
+    rect rgb(240, 240, 240)
+    note right of agent: Tool Invocation
+    agent->>mcp_server: tools/call
+{name&&#35;58; search_code, arguments&&#35;58; {query&&#35;58; "sql injection"}}
+Authorization&&#35;58; Bearer {token} (tool)
+    mcp_server->>mcp_server: Validate Token
+Check scope&&#35;58; mcp&&#35;58;search_code
+    end
+
+    rect rgb(240, 240, 240)
+    note right of agent: Tool Execution
+    mcp_server->>external_api: GET /api/search
+?q=sql+injection
+    external_api-->>mcp_server: 200 OK
+{results&&#35;58; [...]}
+    mcp_server-->>agent: tools/call response
+{content&&#35;58; [{type&&#35;58; text, text&&#35;58; "Found 3 matches..."}]} (result)
+    end
