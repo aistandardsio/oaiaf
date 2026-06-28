@@ -1,6 +1,44 @@
-# OAIAF - OpenAI Agent Framework
+# Open Agent Internet Architecture Framework (OAIAF)
+
+**An Open Standards Reference Architecture for Enterprise AI Agents**
 
 OAIAF provides a reference architecture for enterprise AI agent identity and authorization. It documents how emerging standards fit together to address the fundamental questions enterprises face when deploying autonomous AI agents.
+
+## About the Name
+
+Each word in **Open Agent Internet Architecture Framework** was chosen deliberately:
+
+| Term | Meaning |
+|------|---------|
+| **Open** | Emphasizes open standards, vendor neutrality, and interoperability—not necessarily open source |
+| **Agent** | Clearly defines the domain as AI agents |
+| **Internet** | Reflects that the framework is grounded in Internet standards from IETF, OpenID Foundation, W3C, Linux Foundation, and related communities |
+| **Architecture** | Distinguishes it from AI governance, ethics, or policy-only frameworks by making it clear this is a technical reference architecture |
+| **Framework** | Positions it alongside mature architecture frameworks like TOGAF and SABSA rather than as a single specification |
+
+!!! note "Definition of Open"
+    **Open** refers to the use of open Internet standards and interoperable architectures developed by standards organizations and open industry communities. It does not imply that every implementation must be open source.
+
+## Ecosystem Position
+
+OAIAF sits within a broader ecosystem of standards and tooling:
+
+```
+Standards Catalog Framework (SCF)
+        │
+        ▼
+Agent Standards Catalog (ASC)
+        │
+        ▼
+Open Agent Internet Architecture Framework (OAIAF)
+        │
+        ▼
+agent-protocols
+        │
+        ▼
+Generated protocol artifacts
+(SCIM, AAuth, A2A, MCP, AuthZEN, etc.)
+```
 
 ## The Five Questions
 
