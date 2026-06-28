@@ -45,10 +45,10 @@ OAIAF provides a reference architecture for enterprise AI agent identity and aut
 └────────────────────────────────────────────────────────────────────────────┘
 
 Cross-Cutting Concerns:
-┌─────────────────────────┐  ┌─────────────────────────┐  ┌─────────────────┐
-│  A2A (Agent-to-Agent)   │  │  MCP (Model Context)    │  │  OpenTelemetry  │
-│  Discovery & Delegation │  │  Tool Integration       │  │  Observability  │
-└─────────────────────────┘  └─────────────────────────┘  └─────────────────┘
+┌──────────────────────────┐  ┌─────────────────────────┐  ┌─────────────────┐
+│  A2A (Agent-to-Agent)    │  │  MCP (Model Context)    │  │  OpenTelemetry  │
+│  Discovery & Delegation  │  │  Tool Integration       │  │  Observability  │
+└──────────────────────────┘  └─────────────────────────┘  └─────────────────┘
 ```
 
 | Layer | Standards | Question Answered |

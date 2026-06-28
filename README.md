@@ -73,10 +73,10 @@ OAIAF provides a reference architecture for building AI agents with built-in sup
 └────────────────────────────────────────────────────────────────────────────┘
 
 Cross-Cutting Concerns:
-┌─────────────────────────┐  ┌─────────────────────────┐  ┌─────────────────┐
-│  A2A (Agent-to-Agent)   │  │  MCP (Model Context)    │  │  OpenTelemetry  │
-│  Discovery & Delegation │  │  Tool Integration       │  │  Observability  │
-└─────────────────────────┘  └─────────────────────────┘  └─────────────────┘
+┌──────────────────────────┐  ┌─────────────────────────┐  ┌─────────────────┐
+│  A2A (Agent-to-Agent)    │  │  MCP (Model Context)    │  │  OpenTelemetry  │
+│  Discovery & Delegation  │  │  Tool Integration       │  │  Observability  │
+└──────────────────────────┘  └─────────────────────────┘  └─────────────────┘
 ```
 
 | Layer | Standards | Question Answered |
