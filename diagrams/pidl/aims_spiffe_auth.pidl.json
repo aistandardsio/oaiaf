@@ -22,28 +22,43 @@
       "name": "OAIAF Agent",
       "type": "agent",
       "description": "AI agent using OAIAF framework with AIMSProvider",
-      "trust_level": "semi_trusted"
+      "trust_level": "semi_trusted",
+      "protocol_roles": [
+        { "protocol": "spiffe", "role": "workload", "description": "Receives SVID from SPIRE" },
+        { "protocol": "oauth", "role": "client", "description": "Exchanges SVID for token" }
+      ]
     },
     {
       "id": "spire_agent",
       "name": "SPIRE Agent",
       "type": "server",
       "description": "Local SPIRE agent providing workload identity via Workload API",
-      "trust_level": "trusted"
+      "trust_level": "trusted",
+      "protocol_roles": [
+        { "protocol": "spiffe", "role": "agent", "description": "Issues SVIDs to workloads" }
+      ]
     },
     {
       "id": "auth_server",
       "name": "Authorization Server",
       "type": "authorization_server",
       "description": "OAuth server accepting SPIFFE SVIDs for token exchange",
-      "trust_level": "authoritative"
+      "trust_level": "authoritative",
+      "protocol_roles": [
+        { "protocol": "oauth", "role": "authorization_server", "description": "Issues access tokens" },
+        { "protocol": "spiffe", "role": "trust_domain", "description": "Validates SVIDs" }
+      ]
     },
     {
       "id": "resource_server",
       "name": "Resource Server",
       "type": "resource_server",
       "description": "Protected API accepting mTLS or bearer token authentication",
-      "trust_level": "trusted"
+      "trust_level": "trusted",
+      "protocol_roles": [
+        { "protocol": "oauth", "role": "resource_server", "description": "Validates bearer tokens" },
+        { "protocol": "spiffe", "role": "workload", "description": "Validates client SVIDs" }
+      ]
     }
   ],
   "phases": [
@@ -220,6 +235,84 @@
         "style": "dmz",
         "entities": ["auth_server", "resource_server"]
       }
-    }
+    },
+    "components": [
+      {
+        "id": "spire_infra",
+        "name": "SPIFFE Infrastructure",
+        "type": "spire",
+        "description": "SPIRE runtime providing workload identity",
+        "entities": ["spire_agent"],
+        "implements": [
+          { "protocol": "spiffe", "role": "agent" }
+        ],
+        "examples": ["SPIRE", "Istio"]
+      },
+      {
+        "id": "idp",
+        "name": "Identity Provider",
+        "type": "idp",
+        "description": "OAuth server with SPIFFE trust domain",
+        "entities": ["auth_server"],
+        "implements": [
+          { "protocol": "oauth", "role": "authorization_server" },
+          { "protocol": "spiffe", "role": "trust_domain" }
+        ],
+        "examples": ["Okta", "Entra ID"]
+      },
+      {
+        "id": "resource",
+        "name": "Protected Resource",
+        "type": "resource_api",
+        "description": "API protected by mTLS and bearer tokens",
+        "entities": ["resource_server"],
+        "implements": [
+          { "protocol": "oauth", "role": "resource_server" },
+          { "protocol": "spiffe", "role": "workload" }
+        ]
+      }
+    ],
+    "trust_relations": [
+      {
+        "id": "spire_agent_trust",
+        "from": "spire_infra",
+        "to": "agent",
+        "type": "attests",
+        "credentials": ["x509_svid"],
+        "description": "SPIRE attests agent workload identity"
+      },
+      {
+        "id": "agent_idp",
+        "from": "agent",
+        "to": "idp",
+        "type": "authenticates",
+        "credentials": ["x509_svid"],
+        "description": "Agent authenticates to IdP via mTLS with SVID"
+      },
+      {
+        "id": "idp_agent",
+        "from": "idp",
+        "to": "agent",
+        "type": "issues",
+        "credentials": ["access_token"],
+        "description": "IdP issues token bound to SPIFFE ID"
+      },
+      {
+        "id": "agent_resource",
+        "from": "agent",
+        "to": "resource",
+        "type": "authenticates",
+        "credentials": ["x509_svid", "access_token"],
+        "description": "Agent authenticates with mTLS + bearer token"
+      },
+      {
+        "id": "idp_resource",
+        "from": "idp",
+        "to": "resource",
+        "type": "trusts",
+        "credentials": ["access_token"],
+        "description": "Resource trusts tokens from IdP"
+      }
+    ]
   }
 }

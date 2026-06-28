@@ -18,35 +18,52 @@
       "name": "Human User",
       "type": "user",
       "description": "User who initiates task with orchestrator agent",
-      "trust_level": "trusted"
+      "trust_level": "trusted",
+      "protocol_roles": [
+        { "protocol": "oauth", "role": "resource_owner", "description": "Initiates delegation chain" }
+      ]
     },
     {
       "id": "orchestrator",
       "name": "Orchestrator Agent",
       "type": "agent",
       "description": "Primary agent that coordinates task execution",
-      "trust_level": "semi_trusted"
+      "trust_level": "semi_trusted",
+      "protocol_roles": [
+        { "protocol": "a2a", "role": "agent", "description": "Discovers and invokes other agents" },
+        { "protocol": "oauth", "role": "client", "description": "Requests delegation tokens" }
+      ]
     },
     {
       "id": "specialist",
       "name": "Specialist Agent",
       "type": "delegated_agent",
       "description": "Secondary agent with specialized capabilities",
-      "trust_level": "semi_trusted"
+      "trust_level": "semi_trusted",
+      "protocol_roles": [
+        { "protocol": "a2a", "role": "agent", "description": "Receives delegated tasks" },
+        { "protocol": "oauth", "role": "client", "description": "Accesses resources with delegation token" }
+      ]
     },
     {
       "id": "auth_server",
       "name": "Authorization Server",
       "type": "authorization_server",
       "description": "OAuth server managing delegation tokens",
-      "trust_level": "authoritative"
+      "trust_level": "authoritative",
+      "protocol_roles": [
+        { "protocol": "oauth", "role": "authorization_server", "description": "Issues delegation tokens" }
+      ]
     },
     {
       "id": "resource_server",
       "name": "Resource Server",
       "type": "resource_server",
       "description": "Protected resource accessed by specialist",
-      "trust_level": "trusted"
+      "trust_level": "trusted",
+      "protocol_roles": [
+        { "protocol": "oauth", "role": "resource_server", "description": "Validates delegation chains" }
+      ]
     }
   ],
   "phases": [
@@ -244,6 +261,78 @@
         "issuer": "auth_server",
         "audience": "resource_server",
         "binding": "bearer"
+      }
+    ],
+    "components": [
+      {
+        "id": "idp",
+        "name": "Identity Provider",
+        "type": "idp",
+        "description": "OAuth server supporting delegation grants",
+        "entities": ["auth_server"],
+        "implements": [
+          { "protocol": "oauth", "role": "authorization_server" }
+        ],
+        "examples": ["Okta", "Entra ID", "Auth0"]
+      },
+      {
+        "id": "resource",
+        "name": "Protected Resource",
+        "type": "resource_api",
+        "description": "API that validates delegation chains",
+        "entities": ["resource_server"],
+        "implements": [
+          { "protocol": "oauth", "role": "resource_server" }
+        ]
+      }
+    ],
+    "trust_relations": [
+      {
+        "id": "user_orchestrator",
+        "from": "user",
+        "to": "orchestrator",
+        "type": "delegates",
+        "description": "User delegates task to orchestrator"
+      },
+      {
+        "id": "orchestrator_idp",
+        "from": "orchestrator",
+        "to": "idp",
+        "type": "authenticates",
+        "credentials": ["access_token"],
+        "description": "Orchestrator authenticates to request delegation"
+      },
+      {
+        "id": "idp_orchestrator",
+        "from": "idp",
+        "to": "orchestrator",
+        "type": "issues",
+        "credentials": ["access_token"],
+        "description": "IdP issues delegation token for specialist"
+      },
+      {
+        "id": "orchestrator_specialist",
+        "from": "orchestrator",
+        "to": "specialist",
+        "type": "delegates",
+        "credentials": ["access_token"],
+        "description": "Orchestrator delegates to specialist with token"
+      },
+      {
+        "id": "specialist_resource",
+        "from": "specialist",
+        "to": "resource",
+        "type": "authenticates",
+        "credentials": ["access_token"],
+        "description": "Specialist accesses resource with delegation chain"
+      },
+      {
+        "id": "idp_resource",
+        "from": "idp",
+        "to": "resource",
+        "type": "trusts",
+        "credentials": ["access_token"],
+        "description": "Resource trusts delegation tokens from IdP"
       }
     ]
   }

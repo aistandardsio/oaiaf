@@ -1420,6 +1420,67 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#phase-0-protocol-role-mapping-deployment-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 0: Protocol Role Mapping &amp; Deployment Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 0: Protocol Role Mapping &amp; Deployment Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#protocol-role-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protocol Role Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logical-deployment-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logical Deployment Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trust-relationships" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trust Relationships
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deliverables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deliverables
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#phase-1-documentation-infrastructure" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1773,6 +1834,67 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#phase-0-protocol-role-mapping-deployment-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 0: Protocol Role Mapping &amp; Deployment Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 0: Protocol Role Mapping &amp; Deployment Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#protocol-role-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protocol Role Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logical-deployment-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logical Deployment Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trust-relationships" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trust Relationships
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deliverables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deliverables
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#phase-1-documentation-infrastructure" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1994,6 +2116,279 @@
 </tr>
 </tbody>
 </table>
+<h2 id="phase-0-protocol-role-mapping-deployment-architecture">Phase 0: Protocol Role Mapping &amp; Deployment Architecture<a class="headerlink" href="#phase-0-protocol-role-mapping-deployment-architecture" title="Permanent link">&para;</a></h2>
+<p><strong>Target:</strong> Document protocol roles, trust relationships, and logical deployment components to provide practical implementation guidance.</p>
+<p><strong>Dependency:</strong> Requires PIDL v0.7.0 enhancements (protocol roles, deployment components, trust relationships).</p>
+<h3 id="protocol-role-analysis">Protocol Role Analysis<a class="headerlink" href="#protocol-role-analysis" title="Permanent link">&para;</a></h3>
+<p>For each OAIAF protocol, document:</p>
+<table>
+<thead>
+<tr>
+<th>Protocol</th>
+<th>Roles to Document</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OAuth 2.x</strong></td>
+<td>Resource Owner, Client, Authorization Server, Resource Server</td>
+</tr>
+<tr>
+<td><strong>SCIM</strong></td>
+<td>SCIM Client (provisioner), SCIM Service Provider</td>
+</tr>
+<tr>
+<td><strong>SPIFFE/WIMSE</strong></td>
+<td>Workload, SPIRE Agent, SPIRE Server, Trust Domain</td>
+</tr>
+<tr>
+<td><strong>AAuth</strong></td>
+<td>Agent, Person Server, Access Server, Agent Provider</td>
+</tr>
+<tr>
+<td><strong>ID-JAG</strong></td>
+<td>Assertion Issuer, Token Endpoint, Relying Party</td>
+</tr>
+<tr>
+<td><strong>AuthZEN</strong></td>
+<td>PEP (Policy Enforcement Point), PDP (Policy Decision Point), PAP (Policy Admin Point), PIP (Policy Info Point)</td>
+</tr>
+<tr>
+<td><strong>MCP</strong></td>
+<td>Host, Client, Server</td>
+</tr>
+<tr>
+<td><strong>A2A</strong></td>
+<td>Agent (initiator), Agent (responder), Registry</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Define protocol roles for all 8 protocols</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>Document client vs server role for each</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>Create PIDL files with <code>protocol_roles</code> annotations</td>
+<td>Planned</td>
+</tr>
+</tbody>
+</table>
+<h3 id="logical-deployment-components">Logical Deployment Components<a class="headerlink" href="#logical-deployment-components" title="Permanent link">&para;</a></h3>
+<p>Group protocol roles into real-world deployment components:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Example Products</th>
+<th>Implements Roles</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Identity Provider (IdP)</strong></td>
+<td>Okta, Entra ID, Auth0</td>
+<td>OAuth AS, OIDC Provider, SCIM SP</td>
+</tr>
+<tr>
+<td><strong>Identity Governance (IGA)</strong></td>
+<td>SailPoint, Saviynt</td>
+<td>SCIM Client, Audit, Lifecycle</td>
+</tr>
+<tr>
+<td><strong>Agent Provider</strong></td>
+<td>Custom, agentauth</td>
+<td>AAuth Agent Provider, JWKS</td>
+</tr>
+<tr>
+<td><strong>Person Server</strong></td>
+<td>Custom, agentauth</td>
+<td>AAuth Person Server, Consent UI</td>
+</tr>
+<tr>
+<td><strong>Access Server</strong></td>
+<td>Custom, agentauth</td>
+<td>AAuth Access Server, Token Endpoint</td>
+</tr>
+<tr>
+<td><strong>Policy Decision Point</strong></td>
+<td>Cedar, OpenFGA, OPA</td>
+<td>AuthZEN PDP, PAP</td>
+</tr>
+<tr>
+<td><strong>Access Gateway</strong></td>
+<td>Kong, Envoy, Istio</td>
+<td>AuthZEN PEP, OAuth RS, mTLS termination</td>
+</tr>
+<tr>
+<td><strong>MCP Client</strong></td>
+<td>Claude Code, Cursor</td>
+<td>MCP Client, AAuth Agent, ID-JAG Client</td>
+</tr>
+<tr>
+<td><strong>MCP Server</strong></td>
+<td>Tool providers</td>
+<td>MCP Server, OAuth RS</td>
+</tr>
+<tr>
+<td><strong>Resource API</strong></td>
+<td>Backend services</td>
+<td>OAuth RS, AuthZEN PEP, SPIFFE Workload</td>
+</tr>
+<tr>
+<td><strong>SPIRE Infrastructure</strong></td>
+<td>SPIRE</td>
+<td>SPIRE Server, SPIRE Agent</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Define logical component taxonomy</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>Map each component to protocol roles</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>Create PIDL files with <code>deployment_components</code></td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>Generate component diagrams via PIDL</td>
+<td>Planned</td>
+</tr>
+</tbody>
+</table>
+<h3 id="trust-relationships">Trust Relationships<a class="headerlink" href="#trust-relationships" title="Permanent link">&para;</a></h3>
+<p>Document trust relationships between components:</p>
+<table>
+<thead>
+<tr>
+<th>Relationship Type</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>authenticates</strong></td>
+<td>IdP authenticates User</td>
+</tr>
+<tr>
+<td><strong>validates</strong></td>
+<td>PDP validates Agent claims</td>
+</tr>
+<tr>
+<td><strong>delegates</strong></td>
+<td>User delegates to Agent via ID-JAG</td>
+</tr>
+<tr>
+<td><strong>authorizes</strong></td>
+<td>PDP authorizes Agent action</td>
+</tr>
+<tr>
+<td><strong>issues</strong></td>
+<td>Agent Provider issues aa-agent+jwt</td>
+</tr>
+<tr>
+<td><strong>trusts</strong></td>
+<td>Resource API trusts IdP (via JWKS)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Define trust relationship taxonomy</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>Document credential flows between components</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>Create PIDL files with <code>trust_relations</code></td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>Generate trust relationship diagrams via PIDL</td>
+<td>Planned</td>
+</tr>
+</tbody>
+</table>
+<h3 id="deliverables">Deliverables<a class="headerlink" href="#deliverables" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Deliverable</th>
+<th>Format</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docs/roles/protocol-roles.md</code></td>
+<td>Markdown</td>
+<td>Protocol role reference</td>
+</tr>
+<tr>
+<td><code>docs/roles/deployment-components.md</code></td>
+<td>Markdown</td>
+<td>Component architecture guide</td>
+</tr>
+<tr>
+<td><code>docs/roles/trust-relationships.md</code></td>
+<td>Markdown</td>
+<td>Trust model documentation</td>
+</tr>
+<tr>
+<td><code>pidl/oaiaf-roles.json</code></td>
+<td>PIDL</td>
+<td>Machine-readable role definitions</td>
+</tr>
+<tr>
+<td><code>pidl/oaiaf-components.json</code></td>
+<td>PIDL</td>
+<td>Component topology</td>
+</tr>
+<tr>
+<td><code>pidl/oaiaf-trust.json</code></td>
+<td>PIDL</td>
+<td>Trust relationship model</td>
+</tr>
+<tr>
+<td>Generated diagrams</td>
+<td>SVG</td>
+<td>Component and trust diagrams</td>
+</tr>
+</tbody>
+</table>
+<hr />
 <h2 id="phase-1-documentation-infrastructure">Phase 1: Documentation Infrastructure<a class="headerlink" href="#phase-1-documentation-infrastructure" title="Permanent link">&para;</a></h2>
 <p><strong>Target:</strong> Complete MkDocs setup and GitHub Pages deployment for oaiaf.</p>
 <table>

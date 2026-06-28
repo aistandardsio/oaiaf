@@ -18,28 +18,42 @@
       "name": "OAIAF Agent",
       "type": "agent",
       "description": "AI agent using OAIAF framework with MCP client",
-      "trust_level": "semi_trusted"
+      "trust_level": "semi_trusted",
+      "protocol_roles": [
+        { "protocol": "mcp", "role": "client", "description": "Invokes MCP tools" },
+        { "protocol": "oauth", "role": "client", "description": "Requests tool-scoped tokens" }
+      ]
     },
     {
       "id": "mcp_server",
       "name": "MCP Server",
       "type": "tool_server",
       "description": "MCP server providing tools and resources",
-      "trust_level": "trusted"
+      "trust_level": "trusted",
+      "protocol_roles": [
+        { "protocol": "mcp", "role": "server", "description": "Exposes tools via MCP" },
+        { "protocol": "oauth", "role": "resource_server", "description": "Validates tool tokens" }
+      ]
     },
     {
       "id": "auth_server",
       "name": "Authorization Server",
       "type": "authorization_server",
       "description": "OAuth server issuing tokens for tool access",
-      "trust_level": "authoritative"
+      "trust_level": "authoritative",
+      "protocol_roles": [
+        { "protocol": "oauth", "role": "authorization_server", "description": "Issues tool-scoped tokens" }
+      ]
     },
     {
       "id": "external_api",
       "name": "External API",
       "type": "resource_server",
       "description": "External service accessed by MCP tool",
-      "trust_level": "trusted"
+      "trust_level": "trusted",
+      "protocol_roles": [
+        { "protocol": "oauth", "role": "resource_server", "description": "Validates API tokens" }
+      ]
     }
   ],
   "phases": [
@@ -209,6 +223,94 @@
         "issuer": "auth_server",
         "audience": "mcp_server",
         "binding": "bearer"
+      }
+    ],
+    "components": [
+      {
+        "id": "mcp_client_component",
+        "name": "MCP Client",
+        "type": "mcp_client",
+        "description": "AI agent acting as MCP client",
+        "entities": ["agent"],
+        "implements": [
+          { "protocol": "mcp", "role": "client" },
+          { "protocol": "oauth", "role": "client" }
+        ],
+        "examples": ["Claude Desktop", "ChatGPT", "Custom Agent"]
+      },
+      {
+        "id": "mcp_server_component",
+        "name": "Tool Server",
+        "type": "mcp_server",
+        "description": "MCP server exposing tools",
+        "entities": ["mcp_server"],
+        "implements": [
+          { "protocol": "mcp", "role": "server" },
+          { "protocol": "oauth", "role": "resource_server" }
+        ]
+      },
+      {
+        "id": "idp",
+        "name": "Identity Provider",
+        "type": "idp",
+        "description": "OAuth server issuing tool-scoped tokens",
+        "entities": ["auth_server"],
+        "implements": [
+          { "protocol": "oauth", "role": "authorization_server" }
+        ],
+        "examples": ["Okta", "Entra ID", "Auth0"]
+      },
+      {
+        "id": "external_resource",
+        "name": "External Resource",
+        "type": "resource_api",
+        "description": "External API accessed by tools",
+        "entities": ["external_api"],
+        "implements": [
+          { "protocol": "oauth", "role": "resource_server" }
+        ]
+      }
+    ],
+    "trust_relations": [
+      {
+        "id": "agent_idp",
+        "from": "mcp_client_component",
+        "to": "idp",
+        "type": "authenticates",
+        "credentials": ["jwt_assertion"],
+        "description": "Agent authenticates to get tool tokens"
+      },
+      {
+        "id": "idp_agent",
+        "from": "idp",
+        "to": "mcp_client_component",
+        "type": "issues",
+        "credentials": ["access_token"],
+        "description": "IdP issues tool-scoped token"
+      },
+      {
+        "id": "agent_mcp",
+        "from": "mcp_client_component",
+        "to": "mcp_server_component",
+        "type": "authenticates",
+        "credentials": ["access_token"],
+        "description": "Agent authenticates to MCP server"
+      },
+      {
+        "id": "mcp_external",
+        "from": "mcp_server_component",
+        "to": "external_resource",
+        "type": "authenticates",
+        "credentials": ["api_key"],
+        "description": "MCP server authenticates to external API"
+      },
+      {
+        "id": "idp_mcp",
+        "from": "idp",
+        "to": "mcp_server_component",
+        "type": "trusts",
+        "credentials": ["access_token"],
+        "description": "MCP server trusts tokens from IdP"
       }
     ]
   }

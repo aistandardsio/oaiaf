@@ -18,28 +18,41 @@
       "name": "OAIAF Agent",
       "type": "agent",
       "description": "AI agent using OAIAF framework with AAuthProvider",
-      "trust_level": "semi_trusted"
+      "trust_level": "semi_trusted",
+      "protocol_roles": [
+        { "protocol": "aauth", "role": "agent", "description": "Requests authorization from person server" }
+      ]
     },
     {
       "id": "user",
       "name": "Human User",
       "type": "user",
       "description": "Human who reviews and approves/denies agent requests",
-      "trust_level": "trusted"
+      "trust_level": "trusted",
+      "protocol_roles": [
+        { "protocol": "oauth", "role": "resource_owner", "description": "Grants consent to agent" }
+      ]
     },
     {
       "id": "auth_server",
       "name": "Authorization Server",
       "type": "authorization_server",
       "description": "AAuth-compatible authorization server managing consent flows",
-      "trust_level": "authoritative"
+      "trust_level": "authoritative",
+      "protocol_roles": [
+        { "protocol": "aauth", "role": "person_server", "description": "Manages human consent" },
+        { "protocol": "aauth", "role": "access_server", "description": "Issues agent tokens" }
+      ]
     },
     {
       "id": "resource_server",
       "name": "Resource Server",
       "type": "resource_server",
       "description": "Protected API requiring authorized access",
-      "trust_level": "trusted"
+      "trust_level": "trusted",
+      "protocol_roles": [
+        { "protocol": "oauth", "role": "resource_server", "description": "Validates bearer tokens" }
+      ]
     }
   ],
   "phases": [
@@ -242,6 +255,63 @@
         "issuer": "auth_server",
         "audience": "resource_server",
         "binding": "bearer"
+      }
+    ],
+    "components": [
+      {
+        "id": "person_server",
+        "name": "Person Server",
+        "type": "person_server",
+        "description": "AAuth person server managing human consent",
+        "entities": ["auth_server"],
+        "implements": [
+          { "protocol": "aauth", "role": "person_server" },
+          { "protocol": "aauth", "role": "access_server" }
+        ],
+        "examples": ["Okta", "Entra ID", "Auth0"]
+      },
+      {
+        "id": "resource",
+        "name": "Protected Resource",
+        "type": "resource_api",
+        "description": "API protected by mission-scoped tokens",
+        "entities": ["resource_server"],
+        "implements": [
+          { "protocol": "oauth", "role": "resource_server" }
+        ]
+      }
+    ],
+    "trust_relations": [
+      {
+        "id": "user_agent",
+        "from": "user",
+        "to": "agent",
+        "type": "delegates",
+        "description": "User delegates authority to agent via consent"
+      },
+      {
+        "id": "user_auth",
+        "from": "user",
+        "to": "person_server",
+        "type": "authenticates",
+        "credentials": ["id_token"],
+        "description": "User authenticates to review consent"
+      },
+      {
+        "id": "auth_agent",
+        "from": "person_server",
+        "to": "agent",
+        "type": "issues",
+        "credentials": ["access_token"],
+        "description": "Person server issues mission-scoped token"
+      },
+      {
+        "id": "auth_resource",
+        "from": "person_server",
+        "to": "resource",
+        "type": "trusts",
+        "credentials": ["access_token"],
+        "description": "Resource trusts tokens from person server"
       }
     ]
   }
