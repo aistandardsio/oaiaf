@@ -183,8 +183,32 @@ provider := oaiaf.NewAIMSProvider(agent,
 err := provider.FetchSVIDFromWorkloadAPI(ctx)
 ```
 
+## Architecture
+
+OAIAF implements a five-layer identity stack for enterprise AI agents:
+
+| Layer | Standard | Purpose |
+|-------|----------|---------|
+| Authorization | AuthZEN, Cedar, OpenFGA | Access control decisions |
+| Human Delegation | OAuth 2.x + ID-JAG | Chain of authority |
+| Agent Authentication | AAuth | Agent identity |
+| Workload Identity | WIMSE/SPIFFE | Infrastructure binding |
+| Lifecycle | SCIM Agent Resource | Agent provisioning |
+
+See [docs/architecture.md](docs/architecture.md) for comprehensive documentation including:
+
+- Five-layer identity stack diagrams
+- Protocol specifications and flows
+- Agent type reference matrix
+- OAIAF integration examples
+- Standards reference tables
+
+See [docs/flows.md](docs/flows.md) for detailed sequence diagrams of each protocol flow.
+
 ## Documentation
 
+- [Architecture Guide](docs/architecture.md) - Comprehensive architecture documentation
+- [Protocol Flows](docs/flows.md) - Detailed sequence diagrams for each protocol
 - [Agent Protocols](https://github.com/aistandardsio/agent-protocols) - Protocol implementations
 - [ID-JAG Spec](https://datatracker.ietf.org/doc/draft-ietf-oauth-identity-assertion-authz-grant/) - ID-JAG specification
 - [AAuth Spec](https://datatracker.ietf.org/doc/draft-hardt-oauth-aauth-protocol/) - AAuth specification
