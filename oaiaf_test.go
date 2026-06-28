@@ -6,6 +6,7 @@ import (
 	"crypto/elliptic"
 	"crypto/rand"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -112,7 +113,7 @@ func TestGetTokenExpiredCache(t *testing.T) {
 			ExpiresIn:   3600,
 			Scope:       "scope1",
 		}
-		_ = json.NewEncoder(w).Encode(resp)
+		_ = json.NewEncoder(w).Encode(resp) //nolint:gosec // G117: OAuth token response per RFC 6749
 	}))
 	defer ts.Close()
 
@@ -201,7 +202,7 @@ func TestIDJAGProviderAcquireToken(t *testing.T) {
 			ExpiresIn:   3600,
 			Scope:       "read:email",
 		}
-		_ = json.NewEncoder(w).Encode(resp)
+		_ = json.NewEncoder(w).Encode(resp) //nolint:gosec // G117: OAuth token response per RFC 6749
 	}))
 	defer ts.Close()
 
@@ -273,7 +274,10 @@ func TestAAuthProviderImmediateToken(t *testing.T) {
 				ExpiresIn:   3600,
 				Scope:       "read:email",
 			}
-			_ = json.NewEncoder(w).Encode(resp)
+			//nolint:gosec // G117: OAuth token response per RFC 6749
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				panic(fmt.Sprintf("failed to encode response: %v", err))
+			}
 			return
 		}
 		http.Error(w, "not found", http.StatusNotFound)
@@ -315,7 +319,10 @@ func TestAAuthProviderConsentFlow(t *testing.T) {
 				MissionID:  "123",
 				Interval:   1,
 			}
-			_ = json.NewEncoder(w).Encode(resp)
+			//nolint:gosec // G117: OAuth token response per RFC 6749
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				panic(fmt.Sprintf("failed to encode response: %v", err))
+			}
 			consentCalls++
 
 		case "/consent/status/123":
@@ -323,15 +330,21 @@ func TestAAuthProviderConsentFlow(t *testing.T) {
 			w.Header().Set("Content-Type", "application/json")
 			// First call returns pending, second returns approved
 			if statusCalls < 2 {
-				_ = json.NewEncoder(w).Encode(ConsentStatusResponse{Status: "pending"})
+				//nolint:gosec // G117: OAuth consent status response
+				if err := json.NewEncoder(w).Encode(ConsentStatusResponse{Status: "pending"}); err != nil {
+					panic(fmt.Sprintf("failed to encode response: %v", err))
+				}
 			} else {
-				_ = json.NewEncoder(w).Encode(ConsentStatusResponse{
+				//nolint:gosec // G117: OAuth token response per RFC 6749
+				if err := json.NewEncoder(w).Encode(ConsentStatusResponse{
 					Status:      "approved",
 					AccessToken: "consent-token",
 					TokenType:   "Bearer",
 					ExpiresIn:   3600,
 					Scope:       "read:email",
-				})
+				}); err != nil {
+					panic(fmt.Sprintf("failed to encode response: %v", err))
+				}
 			}
 
 		default:
@@ -419,12 +432,15 @@ func TestAuthorizedRequest(t *testing.T) {
 	// Create a mock auth server
 	authServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(TokenResponse{
+		//nolint:gosec // G117: OAuth token response per RFC 6749
+		if err := json.NewEncoder(w).Encode(TokenResponse{
 			AccessToken: "test-token",
 			TokenType:   "Bearer",
 			ExpiresIn:   3600,
 			Scope:       "read:email",
-		})
+		}); err != nil {
+			panic(fmt.Sprintf("failed to encode response: %v", err))
+		}
 	}))
 	defer authServer.Close()
 

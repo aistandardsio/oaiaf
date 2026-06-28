@@ -9,6 +9,7 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/json"
+	"fmt"
 	"math/big"
 	"net"
 	"net/http"
@@ -290,12 +291,15 @@ func TestAIMSProviderWithMTLS(t *testing.T) {
 	server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/token" {
 			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(TokenResponse{
+			//nolint:gosec // G117: OAuth token response per RFC 6749
+			if err := json.NewEncoder(w).Encode(TokenResponse{
 				AccessToken: "aims-token",
 				TokenType:   "Bearer",
 				ExpiresIn:   3600,
 				Scope:       "read:email",
-			})
+			}); err != nil {
+				panic(fmt.Sprintf("failed to encode response: %v", err))
+			}
 			return
 		}
 		http.Error(w, "not found", http.StatusNotFound)
