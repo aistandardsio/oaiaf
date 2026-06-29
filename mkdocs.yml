@@ -91,6 +91,8 @@ nav:
     - Service Mesh: runtime/service-mesh.md
   - Specifications:
     - Roadmap: specs/ROADMAP.md
+  - Release Notes:
+    - v0.1.0: releases/v0.1.0.md
   - Related Projects:
     - agent-protocols: https://aistandards.io/agent-protocols/
     - agentauth: https://github.com/plexusone/agentauth
