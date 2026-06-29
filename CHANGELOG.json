@@ -1,0 +1,54 @@
+{
+  "irVersion": "1.0",
+  "project": "oaiaf",
+  "repository": "https://github.com/aistandardsio/oaiaf",
+  "versioning": "semver",
+  "commitConvention": "conventional",
+  "maintainers": ["AIStandards.io", "johncwang@gmail.com"],
+  "releases": [
+    {
+      "version": "v0.1.0",
+      "date": "2026-06-29",
+      "commit": "515bf7e",
+      "highlights": [
+        { "description": "Initial release of the Open Agentic Identity and Authorization Framework (OAIAF)" },
+        { "description": "Five-layer identity stack: Lifecycle, Workload, Agent Auth, Human Delegation, Authorization" },
+        { "description": "Go SDK with providers for ID-JAG, AAuth, and AIMS (SPIFFE-based agent identity)" }
+      ],
+      "added": [
+        { "description": "Core `Agent` type and framework foundation", "commit": "2ac938a" },
+        { "description": "Authorization providers with ID-JAG and AAuth support", "commit": "83f83f3" },
+        { "description": "AIMS provider with SPIFFE workload identity support", "commit": "5bdf327" },
+        { "description": "Example applications demonstrating provider usage", "commit": "57c2f69" },
+        { "description": "Protocol roles to PIDL diagram participants", "commit": "515bf7e" }
+      ],
+      "documentation": [
+        { "description": "Comprehensive five-layer architecture documentation", "commit": "31bd65c" },
+        { "description": "PIDL protocol flow diagrams with sequence diagrams", "commit": "59c7073" },
+        { "description": "Protocol flows documentation with embedded diagrams", "commit": "eac01a2" },
+        { "description": "MkDocs site structure and navigation", "commit": "f2cfa9b" },
+        { "description": "Ecosystem roadmap with implementation phases", "commit": "151956e" },
+        { "description": "Five-layer agent identity stack diagram", "commit": "a5c711a" },
+        { "description": "Phase 0 protocol role mapping requirements", "commit": "58ab919" },
+        { "description": "README with API reference and shields", "commit": "4110fd9" },
+        { "description": "Naming rationale and ecosystem positioning", "commit": "3e1725d" }
+      ],
+      "tests": [
+        { "description": "Unit tests for authorization and AIMS providers", "commit": "101f83b" }
+      ],
+      "fixed": [
+        { "description": "Badge URLs and broken documentation links", "commit": "b2347a5" },
+        { "description": "JSON encoding error handling in tests", "commit": "62f6323" },
+        { "description": "AIStandards.io top navbar in docs", "commit": "19374e8" }
+      ],
+      "ci": [
+        { "description": "GitHub Actions workflow for CI/CD", "commit": "4479a96" },
+        { "description": "Shared workflow files for reusable CI components", "commit": "ad3952d" }
+      ],
+      "chore": [
+        { "description": "Go module with dependencies", "commit": "d75e2c8" },
+        { "description": "LICENSE files (Apache 2.0)", "commit": "4d9723c" }
+      ]
+    }
+  ]
+}
