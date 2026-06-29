@@ -2,86 +2,90 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://aistandards.io/oaiaf/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/architecture/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/flows/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/agents/coding-assistants/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/agents/enterprise/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/agents/hosted-platforms/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/agents/multi-agent/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/agents/overview/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/interop/a2a/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/interop/mcp/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/layers/agent-auth/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/layers/authorization/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/layers/human-delegation/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/layers/lifecycle/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/layers/workload-identity/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/observability/agentops/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/observability/opentelemetry/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
+    </url>
+    <url>
+         <loc>https://aistandards.io/oaiaf/releases/v0.1.0/</loc>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/runtime/kubernetes/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/runtime/service-mesh/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/runtime/spire/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
     <url>
          <loc>https://aistandards.io/oaiaf/specs/ROADMAP/</loc>
-         <lastmod>2026-06-28</lastmod>
+         <lastmod>2026-06-29</lastmod>
     </url>
 </urlset>
